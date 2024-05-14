@@ -6,9 +6,15 @@
 		<meta name="description" content="Emulating real sheets of paper in web documents (using HTML and CSS)">
 		<title>JPCV</title>
 		<link rel="stylesheet" type="text/css" href="css/sheets-of-paper-a4.css">
-		<!-- <link rel="stylesheet" type="text/css" href="preflight.css"> -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">		<!-- <link rel="stylesheet" type="text/css" href="preflight.css"> -->
+    
     <link rel="stylesheet/less" type="text/css" href="styles.less" />
+    <link rel="stylesheet/less" type="text/css" href="timeline.less" />
     <script src="https://cdn.jsdelivr.net/npm/less" ></script>
+    <script src="main.js" defer></script>
 	</head>
 	<body class="document">
 		<div class="page">
@@ -16,11 +22,13 @@
       <div class="header">
         <div class="header__left">
           <h1>James Prentice</h1>
-          <h2>INTERMEDIATE SOFTWARE DEVELOPER</h2>
-          <h3>Specalising in frontend web development</h3>
-          <a href="https://www.jamesprentice.com/">www.jamesprentice.com</a>
+          <h3>INTERMEDIATE SOFTWARE DEVELOPER</h3>
+          <p>Specalising in frontend web development</p>
+          <!-- <span> crazy solution -->
+            <a href="https://www.jamesprentice.com/">www.jamesprentice.com</a>
+          <!-- </span> -->
         </div>
-        <div class="header__right">
+        <aside class="header__right">
           <div>
             <img src="./email.svg" width="18px" height="18px" alt="email">
             <p>prenticez@hotmail.co.nz</p>
@@ -29,103 +37,84 @@
             <img src="./location.svg" width="18px" height="18px" alt="location">
             <p>Dunedin, New Zealand</p>
             <div></div>
-            <small>NZ citizen, able to relocate</small>
+            <small>NZ citizen, open to relocation</small>
+          </div>
+        </aside>
+      </div>
+
+      <section class="experiance">
+        <h2>Professional Experience</h2>
+
+        <div class="experiance__company">
+          <img src="./datacom_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Datacom</h3>
+            <h5>Full-time 2 yrs 1mo</h5>
           </div>
         </div>
-      </div>
+
+        <div class="timeline">
+          <div class="timeline__item">
+            <div class="timeline__item__dot"></div>
+            <div class="timeline__item__content">
+              <span>
+                <h4>External Website</h4>
+                <h5><em>(July 2023 - Present)</em></h5>
+              </span>
+              <a href="https://datacom.com">www.datacom.com</a>
+              <ul>
+                <li>Collaborated in large dev team working closely with internal stakeholders (marketing and design team)</li>
+                <li>Enhanced and maintained core website components inside Adobe Experiance Manager (AEM)</li>
+                <li>Built modern AEM components utalising advanced techniques in vanilla HTML, CSS and Javascript <a href="https://codepen.io/jamesprenticez/pen/gOyVNPg?editors=1111">example</a></li>
+                <li>Added user accessibility by introducing keyboard focus-visable styling to 75+ existing components</li>
+                <li>Created proof of concept for a customer account management portal in React/Redux</li>
+                <li>Supported junior team members through peer programming</li>
+              </ul>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__item__dot"></div>
+            <div class="timeline__item__content">
+              <span>
+                <h4>Financial Reporting Database GUI</h4>
+                <h5><em>(April 2023 - July 2023 - 3 months)</em></h5>
+              </span>
+              <ul>
+                <li>Led a solo project converting Microsoft Access app to web based technogies</li>
+                <li>Deployed static web app and serverless functions on Azure infrastructure</li>
+                <li>Implemented JWT authentication with Microsoft Authentication Library by leveraging Azure AAD</li>
+                <li>Built virtulised, editable tables in React with Material UI</li>
+                <li>Created serverless API endpoints with Python/Flask and intergated with T-SQL stored procedures from the DB</li>
+              </ul>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__item__dot"></div>
+            <div class="timeline__item__content">
+              <span>
+                <h4>Internal Billing System</h4>
+                <h5><em>(Aug 2023 - April 2023 - 8 months)</em></h5>
+              </span>
+              <ul>
+                <li>Collaborated in small team to successfully design and build an web app that handles $20m/month in inviocing</li>
+                <li>Used Figma to create wireframes for collaberation and interation during the preliminary design phase</li>
+                <li>Built complex custom table component with expandable rows in React to eloquently display large amounts of data</li>
+                <li>Took the lead on frontend design and beutification by highly customising Material UI themes</li>
+                <li>Learnt a significant amount about Azure infrastructure and pipeline from a more experianced developer</li>
+                <li>Worked closely with an experianced data engineer to develop a data contract between front/back and DB layers</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+      </section>
       
 
 
-      <div class="test">a</div>
-      <div class="test">a</div>
+
         
     </div>
-		<script type="text/javascript">
-		// window.print();
-
-		var Config = {};
-		Config.pixelsPerInch = 96;
-		Config.pageHeightInCentimeter = 29.7; // must match 'min-height' from 'css/sheets-of-paper-*.css' being used
-		Config.pageMarginBottomInCentimeter = 2; // must match 'padding-bottom' and 'margin-bottom' from 'css/sheets-of-paper-*.css' being used
-
-		window.addEventListener("DOMContentLoaded", function () {
-			applyPageBreaks();
-		});
-
-		function applyPageBreaks() {
-			applyManualPageBreaks();
-			applyAutomaticPageBreaks(Config.pixelsPerInch, Config.pageHeightInCentimeter, Config.pageMarginBottomInCentimeter);
-
-			document.querySelectorAll(".document .page").forEach(function (element) {
-				if (!element.classList.contains("has-events")) {
-					element.addEventListener("blur", function () {
-						applyPageBreaks();
-					});
-
-					element.classList.add("has-events");
-				}
-			});
-		}
-
-		/* Applies any manual page breaks in preview mode (screen, non-print) where CSS Paged Media is not fully supported */
-		function applyManualPageBreaks() {
-			var docs, pages, snippets;
-			docs = document.querySelectorAll(".document");
-
-			for (var d = docs.length - 1; d >= 0; d--) {
-				pages = docs[d].querySelectorAll(".page");
-
-				for (var p = pages.length - 1; p >= 0; p--) {
-					snippets = pages[p].children;
-
-					for (var s = snippets.length - 1; s >= 0; s--) {
-						if (snippets[s].classList.contains("page-break")) {
-							pages[p].insertAdjacentHTML("afterend", "<div class=\"page\" contenteditable=\"true\"></div>");
-
-							for (var n = snippets.length - 1; n > s; n--) {
-								pages[p].nextElementSibling.insertBefore(snippets[n], pages[p].nextElementSibling.firstChild);
-							}
-
-							snippets[s].remove();
-						}
-					}
-				}
-			}
-		}
-
-		/* Applies (where necessary) automatic page breaks in preview mode (screen, non-print) where CSS Paged Media is not fully supported */
-		function applyAutomaticPageBreaks(pixelsPerInch, pageHeightInCentimeter, pageMarginBottomInCentimeter) {
-			var inchPerCentimeter = 0.393701;
-			var pageHeightInInch = pageHeightInCentimeter * inchPerCentimeter;
-			var pageHeightInPixels = Math.ceil(pageHeightInInch * pixelsPerInch);
-			var pageMarginBottomInInch = pageMarginBottomInCentimeter * inchPerCentimeter;
-			var pageMarginBottomInPixels = Math.ceil(pageMarginBottomInInch * pixelsPerInch);
-			var docs, pages, snippets, pageCoords, snippetCoords;
-			docs = document.querySelectorAll(".document");
-
-			for (var d = docs.length - 1; d >= 0; d--) {
-				pages = docs[d].querySelectorAll(".page");
-
-				for (var p = 0; p < pages.length; p++) {
-					if (pages[p].clientHeight > pageHeightInPixels) {
-						pages[p].insertAdjacentHTML("afterend", "<div class=\"page\" contenteditable=\"true\"></div>");
-						pageCoords = pages[p].getBoundingClientRect();
-						snippets = pages[p].querySelectorAll("h1, h2, h3, h4, h5, h6, p, ul, ol");
-
-						for (var s = snippets.length - 1; s >= 0; s--) {
-							snippetCoords = snippets[s].getBoundingClientRect();
-
-							if ((snippetCoords.bottom - pageCoords.top + pageMarginBottomInPixels) > pageHeightInPixels) {
-								pages[p].nextElementSibling.insertBefore(snippets[s], pages[p].nextElementSibling.firstChild);
-							}
-						}
-
-						pages = docs[d].querySelectorAll(".page");
-					}
-				}
-			}
-		}
-		</script>
 	</body>
 </html>
 
