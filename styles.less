@@ -1,0 +1,97 @@
+@color-black:  #212529;
+@color-grey: #333;
+@color-blue: #1d4ed8;
+
+h1{
+  all: unset;
+  display: block;
+  font-family: "Trebuchet MS", Tahoma, sans-serif;
+  font-size: 48px;
+  line-height: 56px;
+  font-weight: bold;
+  color: @color-black;
+  margin-bottom: 6px; 
+}
+h2{
+  all: unset;
+  display: block;
+  font-family: "Trebuchet MS", Tahoma, sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: bold;
+  color: @color-black;
+  margin-bottom: 4px; 
+}
+h3{
+  all: unset;
+  display: block;
+  font-family: "Trebuchet MS", Tahoma, sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: normal;
+  color: @color-black;
+  margin-bottom: 0px; 
+}
+p {
+  all: unset;
+  display: block;
+  font-size: 12px;
+  line-height: 20px;
+  margin: 0px;
+}
+a{
+  all: unset;
+  display: block;
+  font-size: 12px;
+  line-height: 18px;
+  color: @color-blue;
+  margin-bottom: 0px; 
+}
+small{
+  all: unset;
+  font-size: 8px;
+  line-height: 14px;
+  font-style: italic;
+  color: @color-grey;
+}
+
+.header {
+  display: flex;
+  margin-bottom: 16px;
+
+  &__left{
+    // border: red solid 1px;
+    width: 100%;
+
+    span{
+      display: flex;
+      align-items: center;
+    }
+  }
+  
+  &__right {
+    // border: red solid 1px;
+    flex-grow: 1;
+    text-align: right;
+
+    div {
+      margin-top: 8px;
+      display: grid;
+      gap: 0px 8px;
+      grid-template-columns: 25px 1fr;
+    }
+  }
+}
+
+.test{
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  border: red 5px solid;
+}
+
+footer{
+  .overlay{
+    background-color: aqua;
+  }
+}

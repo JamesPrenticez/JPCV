@@ -85,25 +85,12 @@ h1, h2, h3, h4, h5, h6 {
 	/* Avoid page breaks immediately */
 	page-break-after: avoid;
 }
-/* For all paragraph tags */
+
 p {
-	/* Reset the margin so that the text starts and ends at the expected marks */
 	margin: 0;
 }
-/* For adjacent paragraph tags */
-p + p {
-	/* Restore the spacing between the paragraphs */
-	margin-top: 0.5cm;
-}
-/* For links in the document */
-a {
-	/* Prevent colorization or decoration */
-	text-decoration: none;
-	color: black;
-}
-/* For tables in the document */
+
 table {
-	/* Avoid page breaks inside */
 	page-break-inside: avoid;
 }
 /* Use CSS Paged Media to switch from continuous documents to sheet-like documents with separate pages */
