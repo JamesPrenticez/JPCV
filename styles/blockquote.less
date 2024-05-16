@@ -1,0 +1,67 @@
+blockquote{
+  display:block;
+  background: #fff;
+  padding: 15px 20px 15px 45px;
+  margin: 0 0 20px;
+  position: relative;
+  
+  /*Font*/
+  font-size: 12px;
+  line-height: 14px;
+  color: @color-grey-dark;
+  text-align: justify;
+  
+  /*Borders - (Optional)*/
+  border-left: 15px solid @color-blue;
+  border-right: 2px solid @color-blue;
+  
+  /*Box Shadow - (Optional)*/
+  -moz-box-shadow: 2px 2px 15px @color-grey-light;
+  -webkit-box-shadow: 2px 2px 15px @color-grey-light;
+  box-shadow: 2px 2px 15px @color-grey-light;
+
+  & cite {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    color: red;
+    font-size: 10px;
+    font-weight: 400;
+    color: @color-grey-medium;
+    display: flex;
+    justify-content: flex-end;
+    
+    &:before {
+      content: '\2015';  
+    }
+  }
+  // &:after {
+  //     content: '\201D';
+  //     position: absolute;
+  //     top: 0.28em;
+  //     right: 0;
+  //     font-size: 6em;
+  //     font-style: italic;
+  //     color: darken(@color-grey-medium, 7%);
+  //     z-index: -1;
+  //  }
+}
+
+blockquote::before{
+  content: "\201C"; /*Unicode for Left Double Quote*/
+  
+  /*Font*/
+  font-family: Georgia, serif;
+  font-size: 40px;
+  font-weight: bold;
+  color: #999;
+  
+  /*Positioning*/
+  position: absolute;
+  left: 10px;
+  top:25px;
+}
+
+blockquote::after{
+  /*Reset to make sure*/
+  content: "";
+}

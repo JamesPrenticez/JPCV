@@ -5,51 +5,48 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="description" content="Emulating real sheets of paper in web documents (using HTML and CSS)">
 		<title>JPCV</title>
-		<link rel="stylesheet" type="text/css" href="css/sheets-of-paper-a4.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">		<!-- <link rel="stylesheet" type="text/css" href="preflight.css"> -->
-    
-    <link rel="stylesheet/less" type="text/css" href="styles.less" />
-    <link rel="stylesheet/less" type="text/css" href="timeline.less" />
-    <script src="https://cdn.jsdelivr.net/npm/less" ></script>
-    <script src="main.js" defer></script>
-	</head>
-	<body class="document">
-		<div class="page">
 
-      <div class="header">
-        <div class="header__left">
-          <h1>James Prentice</h1>
-          <h3>INTERMEDIATE SOFTWARE DEVELOPER</h3>
-          <p>Specalising in frontend web development</p>
-          <!-- <span> crazy solution -->
-            <a href="https://www.jamesprentice.com/">www.jamesprentice.com</a>
-          <!-- </span> -->
-        </div>
-        <aside class="header__right">
-          <div>
-            <img src="./email.svg" width="18px" height="18px" alt="email">
-            <p>prenticez@hotmail.co.nz</p>
-            <img src="./phone.svg" width="18px" height="18px" alt="phone">
-            <p>+64 27 555 9916</p>
-            <img src="./location.svg" width="18px" height="18px" alt="location">
-            <p>Dunedin, New Zealand</p>
-            <div></div>
-            <small>NZ citizen, open to relocation</small>
-          </div>
-        </aside>
+    <link rel="stylesheet/less" type="text/css" href="styles/main.less" />
+    <script src="https://cdn.jsdelivr.net/npm/less" ></script>
+	</head>
+	<body>
+		<page size="A4">
+
+    <div class="header">
+      <div class="header__left">
+        <h1>James Prentice</h1>
+        <h3>INTERMEDIATE SOFTWARE DEVELOPER</h3>
+        <p>Specalising in frontend web development</p>
+        <!-- <span> crazy solution -->
+          <a href="https://www.jamesprentice.com/" target="_blank" onclick="javascript:windows.open('link', [options]);">www.jamesprentice.com</a>
+        <!-- </span> -->
       </div>
+      <aside class="header__right">
+        <div>
+          <img src="./imgs/email.svg" width="18px" height="18px" alt="email">
+          <p>prenticez@hotmail.co.nz</p>
+          <img src="./imgs/phone.svg" width="18px" height="18px" alt="phone">
+          <p>+64 27 555 9916</p>
+          <img src="./imgs/location.svg" width="18px" height="18px" alt="location">
+          <p>Dunedin, New Zealand</p>
+          <div></div>
+          <small>NZ citizen, open to relocation</small>
+        </div>
+      </aside>
+    </div>
 
       <section class="experiance">
         <h2>Professional Experience</h2>
 
         <div class="experiance__company">
-          <img src="./datacom_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <img src="./imgs/datacom_logo.svg" width="32px" height="32px" alt="datacom_logo">
           <div>
             <h3>Datacom</h3>
-            <h5>Full-time 2 yrs 1mo</h5>
+            <h5>Full-time, Software Developer - 2 yrs 1mo</h5>
           </div>
         </div>
 
@@ -60,14 +57,14 @@
               <span>
                 <h4>External Website</h4>
                 <h5><em>(July 2023 - Present)</em></h5>
+                <a class="small-link" href="https://datacom.com" target="_blank">www.datacom.com</a>
               </span>
-              <a href="https://datacom.com">www.datacom.com</a>
               <ul>
                 <li>Collaborated in large dev team working closely with internal stakeholders (marketing and design team)</li>
                 <li>Enhanced and maintained core website components inside Adobe Experiance Manager (AEM)</li>
-                <li>Built modern AEM components utalising advanced techniques in vanilla HTML, CSS and Javascript <a href="https://codepen.io/jamesprenticez/pen/gOyVNPg?editors=1111">example</a></li>
-                <li>Added user accessibility by introducing keyboard focus-visable styling to 75+ existing components</li>
-                <li>Created proof of concept for a customer account management portal in React/Redux</li>
+                <li>Built modern AEM components utalising advanced techniques in vanilla HTML, CSS and Javascript <a class="small-link left-align" href="https://codepen.io/jamesprenticez/pen/gOyVNPg?editors=1111">live example</a></li>
+                <li>Added user accessibility by introducing keyboard focusable styling to 75+ existing components</li>
+                <li>Created proof of concept for a customer account management portal in React and Redux</li>
                 <li>Supported junior team members through peer programming</li>
               </ul>
             </div>
@@ -105,16 +102,177 @@
               </ul>
             </div>
           </div>
+          <div class="timeline__item">
+            <div class="timeline__item__dot"></div>
+            <div class="timeline__item__content">
+              <span>
+                <h4>Backing Sheets</h4>
+                <h5><em>(May 2023 - Aug 2023 - 3 months)</em></h5>
+              </span>
+              <ul>
+                <li>Successfully queried data from SQL db and wrote/formatted it into a presentable excel spreadsheet using Python xlxs writer</li>
+                <li>Serverd excel file as a blob download on a static React webpage hosted on Azure infrastructure</li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </section>
 
+      <h2>Previous Experience in the Construction Industry</h2>
 
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/jennian_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Jennian Homes</h3>
+            <h5>Full-time, Intermediate Quantity Surveyor - 6mo</h5>
+          </div>
+        </div>
+        <div class="prev-experiance ">
+          <ul>
+            <li>Measured quanties and estimated cost of construction for mid-range residential homes</li>
+            <li>Automated the generation of purchace orders for building material suppliers</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/rawlinsons_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Rawlinsons</h3>
+            <h5>Full-time, Intermediate Quantity Surveyor - 1yr</h5>
+          </div>
+        </div>
+        <div class="prev-experiance ">
+          <ul>
+            <li>Cost planning and estimation from preliminary through to detailed design stage</li>
+            <li>Measured quanaties and produced detailed schedule of quantities</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/breen_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Been Homes</h3>
+            <h5>Full-time, Junior Quantity Surveyor - 2yr 2mo</h5>
+            <ul>
+              <li>Measured quanties and estimated cost of construction for mid-range to high-end residential homes</li>
+              <li>Worked with internal sales team to produce detailed fixed price quotes for residentail clients </li>
+            </ul>
+          </div>
+        </div>
+      </section> 
+
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/fletcher_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Fletcher Construction</h3>
+            <h5>Full-time, Apprentice Carpenter - 2yr 5mo</h5>
+            <ul>
+              <li>Commercial construction in Christchurch post earthquakes</li>
+            </ul>
+          </div>
+        </div>
       </section>
       
+      <footer>2024</footer>
+    </page>
+
+    <page size="A4">
 
 
+      <h2>Education</h2>
 
-        
-    </div>
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/dev_academy_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Enspiral Dev Academy (bootcamp)</h3>
+            <h5>Full-time, Certificate in Web Development - 17 weeks</h5>
+            <ul>
+              <li>Soft skills by learning how to develop an fabulous team culture</li>
+              <li>Peer programming through driver/navigator method</li>
+              <li>Activly giving and recieveing feedback in a structured format</li>
+              <li>Group project work using the Agile framework</li>
+              <li>Presentation skills through lightening talks</li>
+              <li>Core foundational programming consepts</li>
+            </ul>
+          </div>
+        </div>
+      </section> 
+
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/otago_poly.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Otago Polytechnic</h3>
+            <h5>Full-time, Diploma in Quantity Surveying - 2yr</h5>
+            <ul>
+              <li>Residential and Commercial Construction methodologies</li>
+              <li>Construction Law</li>
+              <li>Method of Measurement</li>
+              <li>Contract Administation</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/otago_uni_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>University of Otago</h3>
+            <h5>Full-time, Commerce Papers - 1yr (non-complete)</h5>
+            <ul>
+              <li>Accounting</li>
+              <li>Ecconomics</li>
+              <li>Quantitavie Anylasis</li>
+              <li>Statistics</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="experiance__company">
+          <img src="./imgs/sit_logo.svg" width="32px" height="32px" alt="datacom_logo">
+          <div>
+            <h3>Southern Instatute of Technology</h3>
+            <h5>Full-time, Certificate in Pre-trade Carpentry - 1yr</h5>
+            <ul>
+              <li>All theory papers for an building apprentiship</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <h2>Recommendations</h2>
+
+      <section>
+        <blockquote>
+          James has been a great software developer to work with as he has given me knowledge to learn from.
+          His assertiveness with ideas fixes the issues that he is given and his confidence makes him a great communicator with our team and clients.
+          He is also a friendly and an approachable team member, which reassures me that when his support is needed, he will lend a helping hand
+        <cite>
+          Jessa Attygale (Associate Developer)
+        </cite>
+        </blockquote>
+        <blockquote>
+          <p> James has been a fantastic addition to the Datacom website team. He always gives his best effort to bring our component designs to life for the website. </p>
+          James does a great job when it comes to clearly communicating with me to clarify design queries, and initiating discussions when changes may be necessary to the original design vision due to technical limitations and concerns. So I struggle to find areas of improvement for James, and instead encourage him to keep doing what he is doing and maintain the great problem solving mindset that he brings to the team. 
+          Thank you James for all that you do.
+        <cite>
+          Taylor Newton (Lead designer)
+        </cite>
+        </blockquote>
+      </section>
+
+      <footer>2024</footer>
+    </page>
 	</body>
 </html>
 
