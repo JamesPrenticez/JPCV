@@ -5,10 +5,6 @@
   color: @color-black;
 }
 
-html {    
-  // scroll-behavior: smooth;
-}
-
 h1 {
   all: unset;
   display: block;
@@ -53,6 +49,12 @@ h5 {
   font-weight: 400;
   color: @color-grey-dark;
   margin-bottom: 0px; 
+
+}
+
+.reduce{
+  margin-top: -6px;
+  margin-bottom: 6px; 
 }
 
 p {
@@ -60,7 +62,7 @@ p {
   display: block;
   font-size: 12px;
   line-height: 18px;
-  margin: 0px;
+  margin: 0px 0px 4px 0px;
   padding: 0px;
 }
 
@@ -74,6 +76,10 @@ a {
   cursor: pointer;
 }
 
+.small-link {
+  font-size: 10px;
+}
+
 small {
   all: unset;
   font-size: 8px;
@@ -84,7 +90,7 @@ small {
 
 span {
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
 ul {
@@ -102,17 +108,13 @@ section{
   padding-bottom: 8px;
 }
 
-.small-link {
-  font-size: 10px;
-}
-
 .left-align{
   margin-left: auto;
 }
 
 footer{
   position: absolute;
-  bottom: 1cm;
+  bottom: 0.5cm;
   right: 1cm;
   font-size: 12px;
   font-weight: 600;
