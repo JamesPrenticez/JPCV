@@ -23,7 +23,7 @@
     <div class="header">
       <div class="header__left">
         <h1>James Prentice</h1>
-        <h3>FULL STACK DEVELOPER</h3>
+        <h3>MID-WEIGHT - FULL STACK DEVELOPER</h3>
       </div>
       <aside class="header__right">
         <div>
@@ -70,16 +70,14 @@
                 script that produces the per-volatility RTP multiplier table the game reads from</li>
               <li>Delivered design-led UI (difficulty, bonus-buy, battle-mode, game-info and how-to-play modals, intro
                 screens, round history), responsive across desktop, mobile and landscape</li>
-              <li>Built the betting and control UI: bet input with a number stepper, autoplay with turbo play, and the
-                cash-out flow with its animated cash-out and max-win pop-ups</li>
+              <li>Built the betting and control UI (bet input with a number stepper, autoplay with turbo play, and the
+                cash-out flow with its animated cash-out and max-win pop-ups)</li>
               <li>Built the final win screen (Spine character animation, star and sparkle effects) with PixiJS/WebGL
               </li>
               <li>Removed first-load jank by preloading modal art, gating the loading screen on fonts, pre-warming
                 textured panels and fixing Spine teardown order</li>
-              <li>Built parts of the game's reusable UI kit (wooden modal, overlay, tabs, sliders, steppers) and wrote
-                Vitest
-                suites for autoplay, game state and win-screen logic, plus Playwright e2e for fairness modal and
-                how-to-play screens</li>
+              <li>Built parts of the game's reusable UI kit (buttons, modals, overlay, tabs, sliders, steppers etc.) for
+                our Burst Games Storybook component library tested with Vitest</li>
             </ul>
           </div>
         </div>
@@ -93,13 +91,13 @@
               <li>Built the lobby-to-game iframe messaging system that syncs volume and mute state between the lobby and
                 embedded games, secured with a trusted-origins check</li>
               <li>Built the server-driven, feature-flagged settings system (chat, history, audio, stream quality, info,
-                support and balance) reused across all our table games</li>
-              <li>Extended server-side chat moderation with URL and profanity checks, and wired server-configured AFK
+                support and user balance) reused across all our table games</li>
+              <li>Extended server-side chat moderation with URL and profanity checks, Wired server-configured AFK
                 timers and the require-bet-to-chat business rule through to the client</li>
               <li>Built the frontend game lobby (navbar, featured-game video with fallback, game cards, user menu and
                 footer), responsive across desktop, landscape and mobile</li>
               <li>Built shared UI components (buttons, inputs, tabs, accordion, marquee, toggle, modal) for our
-                Storybook component library, tested with Vitest</li>
+                Traditional Games Storybook component library, tested with Vitest</li>
               <li>Built many of the in-game modals and panels shared across the table games (a swipeable mobile settings
                 modal, audio and history modals, the AFK-timeout modal, per-game tutorials, game statistics modal and
                 favourites with hot/cold charts</li>
@@ -108,9 +106,9 @@
               <li>Hardened translation content with DOMPurify on our JSON-to-HTML renderer and cache-busted, versioned
                 language files</li>
               <li>Took over and cleaned up inherited code. Fixed and extended the blackjack dealer monitor (split hands,
-                player and dealer scores, duplicate-card bugs) and the roulette bet builder (saving state, favourite-bet
-                limits, mobile layout, overlay and z-index bugs), refactored the winners list and Baccarat grid and
-                history boards</li>
+                player and dealer scores, duplicate-card bugs). Enhanced the roulette bet builder (saving state,
+                favourite-bet limits, mobile layout, overlay and z-index bugs), refactored Baccarat game grid and
+                history board</li>
             </ul>
           </div>
         </div>
@@ -119,21 +117,21 @@
           <div class="timeline__item__dot"></div>
           <div class="timeline__item__content">
             <span>
-              <h4>Phoenix365 Operator Integration (wallet &amp; game-launch APIs)</h4>
+              <h4>External Operator Integration (wallet &amp; game-launch APIs)</h4>
             </span>
             <ul>
-              <li>Built a two-way operator integration in our Koa/TypeScript game server. Inbound, Phoenix365 calls our
+              <li>Built a two-way operator integration in our Koa/TypeScript game server. Inbound API calls to our
                 signed <code>/launch</code> (returns a game URL for the player session) and <code>/games</code>
                 (catalogue
-                grouped by provider) routes; each request is checked against an IP allow-list and a base64 HMAC-SHA256
+                grouped by provider) routes. Each request is checked against an IP allow-list and a base64 HMAC-SHA256
                 <code>Signature</code> of the raw body
               </li>
               <li>Implemented the outbound wallet contract: <code>/balance</code>, <code>/bet</code>, <code>/win</code>
                 and <code>/adjustment</code> (bet cancel) calls, each signed and carrying a unique request ID and
                 transaction ID, with wins linked to their original bet and rollbacks to the bet they cancel</li>
-              <li>Kept money exact by converting between the BigInt ledger and per-currency minor units - validated
-                every
-                response with Zod and mapped the operator's 13 error codes (insufficient funds, bet limit etc.)
+              <li>Kept monetary values precise by converting between the BigInt ledger and per-currency minor units -
+                validated
+                every response with Zod and mapped the operator's 13 error codes (insufficient funds, bet limit etc.)
                 to game-server states</li>
               <li>Documented the API as a Bruno collection and extended our mock operator to simulate failure cases for
                 testing</li>
@@ -147,10 +145,11 @@
               <h4>Across All Projects</h4>
             </span>
             <ul>
-              <li>Shipped 240+ merged PRs across two products and reviewed 35+ teammate PRs</li>
-              <li>Use Claude Code daily, kept on-convention by a shared CLAUDE.md and project skills, with its output
-                reviewed, tested and refactored before merge; cut token spend on shell output by about 50% using RTK, a
-                CLI proxy that filters command output</li>
+              <li>Shipped 240+ merged PRs across multiple projects and reviewed 35+ teammate PRs</li>
+              <li>Use Claude Code daily, kept on-track by using a CLAUDE.md file and project specific skills. Output
+                reviewed, tested and refactored before commiting/merging. Cut token spend on shell output by about 50%
+                using RTK.
+              </li>
             </ul>
           </div>
         </div>
