@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type InputHTMLAttributes } from "react";
 import styled from "styled-components";
-import { SOURCES, STATUSES, type Application, type Draft } from "../shared.ts";
+import { LEVELS, ROLE_TYPES, SOURCES, STATUSES, type Application, type Draft } from "../shared.ts";
 import { Button } from "./styles.ts";
 
 const Dialog = styled.dialog`
@@ -57,10 +57,13 @@ export default function Form({ row, onSave, onDelete, onClose }: Props) {
       <input name={name} defaultValue={row[name] ?? ""} {...rest} />
     </Label>
   );
-  const select = (label: string, name: keyof Application, options: readonly string[]) => (
+  const select = (label: string, name: keyof Application, options: readonly string[], optional = false) => (
     <Label>
       {label}
-      <select name={name} defaultValue={row[name]}>{options.map((o) => <option key={o}>{o}</option>)}</select>
+      <select name={name} defaultValue={row[name]}>
+        {optional && <option value="" />}
+        {options.map((o) => <option key={o}>{o}</option>)}
+      </select>
     </Label>
   );
 
@@ -70,7 +73,8 @@ export default function Form({ row, onSave, onDelete, onClose }: Props) {
         <h2>{row.id ? "Edit application" : "New application"}</h2>
         <fieldset>
           {input("Company *", "company", { required: true, wide: true })}
-          {input("Role", "role", { wide: true })}
+          {select("Level", "role_level", LEVELS, true)}
+          {select("Role type", "role_type", ROLE_TYPES, true)}
           {select("Source", "source", SOURCES)}
           {select("Status", "status", STATUSES)}
           {input("Date applied / contacted", "date_applied", { type: "date" })}

@@ -19,7 +19,7 @@ const call = (path: string, method = "GET", body?: Draft) =>
     body: body && JSON.stringify(body),
   });
 
-const valid: Draft = { company: "Acme", source: "LinkedIn", status: "Contacted", job_url: "https://seek.co.nz/job/1" };
+const valid: Draft = { company: "Acme", priority: "Medium", source: "LinkedIn", status: "Contacted", job_url: "https://seek.co.nz/job/1" };
 
 test("create, list, update, delete", async () => {
   const created = (await (await call("", "POST", valid)).json()) as Application;
@@ -36,11 +36,23 @@ test("create, list, update, delete", async () => {
   assert.equal((await call("/9999", "PUT", valid)).status, 404);
 });
 
+test("lists high priority first", async () => {
+  for (const [company, priority] of [["Low Co", "Low"], ["High Co", "High"], ["Mid Co", "Medium"]] as const) {
+    await call("", "POST", { ...valid, company, priority });
+  }
+  const rows = (await (await call("")).json()) as Application[];
+  assert.deepEqual(rows.map((r) => r.company), ["High Co", "Mid Co", "Low Co"]);
+  for (const r of rows) await call(`/${r.id}`, "DELETE");
+});
+
 test("rejects bad input", async () => {
   const cases = [
     { ...valid, company: " " },
     { ...valid, status: "Hired" },
+    { ...valid, priority: "Urgent" },
     { ...valid, source: "Facebook" },
+    { ...valid, role_level: "Staff" },
+    { ...valid, role_type: "DevOps" },
     { ...valid, job_url: "javascript:alert(1)" },
     { ...valid, date_applied: "10/10/2026" },
   ];

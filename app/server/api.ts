@@ -2,7 +2,7 @@ import express, { type ErrorRequestHandler } from "express";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { SOURCES, STATUSES, type Application } from "../shared.ts";
+import { LEVELS, PRIORITIES, ROLE_TYPES, SOURCES, STATUSES, type Application } from "../shared.ts";
 
 type Fields = Omit<Application, "id">;
 
@@ -15,8 +15,10 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS applications (
     id               INTEGER PRIMARY KEY,
     company          TEXT NOT NULL,
-    role             TEXT NOT NULL DEFAULT '',
-    source           TEXT NOT NULL DEFAULT 'Other',
+    priority         TEXT NOT NULL DEFAULT 'Medium',
+    role_level      TEXT NOT NULL DEFAULT '',
+    role_type        TEXT NOT NULL DEFAULT '',
+    source          TEXT NOT NULL DEFAULT 'Other',
     status           TEXT NOT NULL DEFAULT 'Saved',
     date_applied     TEXT NOT NULL DEFAULT '',
     follow_up_date   TEXT NOT NULL DEFAULT '',
@@ -30,11 +32,23 @@ db.exec(`
     notes            TEXT NOT NULL DEFAULT ''
   )
 `);
+// ponytail: one-off migration from the old free-text `role` column; delete once every DB has run it.
+if (db.prepare("SELECT 1 FROM pragma_table_info('applications') WHERE name = 'role'").get()) {
+  db.exec(`
+    ALTER TABLE applications DROP COLUMN role;
+    ALTER TABLE applications ADD COLUMN role_level TEXT NOT NULL DEFAULT '';
+    ALTER TABLE applications ADD COLUMN role_type TEXT NOT NULL DEFAULT '';
+  `);
+}
+// ponytail: one-off migration for DBs created before `priority` existed; delete once every DB has run it.
+if (!db.prepare("SELECT 1 FROM pragma_table_info('applications') WHERE name = 'priority'").get()) {
+  db.exec("ALTER TABLE applications ADD COLUMN priority TEXT NOT NULL DEFAULT 'Medium'");
+}
 
 const URLS = ["company_url", "job_url", "contact_linkedin"] as const;
 const DATES = ["date_applied", "follow_up_date"] as const;
 const FIELDS = [
-  "company", "role", "source", "status", ...DATES, ...URLS,
+  "company", "priority", "role_level", "role_type", "source", "status", ...DATES, ...URLS,
   "contact_name", "contact_role", "contact_email", "contact_phone", "notes",
 ] as const satisfies readonly (keyof Fields)[];
 
@@ -46,14 +60,18 @@ const oneOf = (list: readonly string[], v: string) => list.includes(v);
 function parse(body: Record<string, unknown> = {}): Fields {
   const raw: Record<string, string> = Object.fromEntries(FIELDS.map((f) => [f, String(body[f] ?? "").trim()]));
   if (!raw.company) throw bad("company is required");
+  if (!oneOf(PRIORITIES, raw.priority)) throw bad(`priority must be one of: ${PRIORITIES.join(", ")}`);
   if (!oneOf(SOURCES, raw.source)) throw bad(`source must be one of: ${SOURCES.join(", ")}`);
   if (!oneOf(STATUSES, raw.status)) throw bad(`status must be one of: ${STATUSES.join(", ")}`);
+  if (raw.role_level && !oneOf(LEVELS, raw.role_level)) throw bad(`role_level must be one of: ${LEVELS.join(", ")}`);
+  if (raw.role_type && !oneOf(ROLE_TYPES, raw.role_type)) throw bad(`role_type must be one of: ${ROLE_TYPES.join(", ")}`);
   for (const f of URLS) if (raw[f] && !/^https?:\/\//i.test(raw[f])) throw bad(`${f} must start with http:// or https://`);
   for (const f of DATES) if (raw[f] && !/^\d{4}-\d{2}-\d{2}$/.test(raw[f])) throw bad(`${f} must be YYYY-MM-DD`);
   return raw as Fields; // validated above
 }
 
-const list = db.prepare("SELECT * FROM applications ORDER BY date_applied DESC, id DESC");
+const byPriority = `CASE priority ${PRIORITIES.map((p, i) => `WHEN '${p}' THEN ${i}`).join(" ")} END`;
+const list = db.prepare(`SELECT * FROM applications ORDER BY ${byPriority}, date_applied DESC, id DESC`);
 const insert = db.prepare(
   `INSERT INTO applications (${FIELDS.join(", ")}) VALUES (${FIELDS.map((f) => ":" + f).join(", ")}) RETURNING *`,
 );
