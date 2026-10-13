@@ -3,9 +3,15 @@ import assert from "node:assert/strict";
 import { once } from "node:events";
 import type { AddressInfo } from "node:net";
 import express from "express";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { Application, Draft } from "../shared.ts";
 
+const cvDir = mkdtempSync(join(tmpdir(), "cv-"));
 process.env.DB_PATH = ":memory:";
+process.env.CV_DIR = cvDir;
+after(() => rmSync(cvDir, { recursive: true }));
 const { api } = await import("./api.ts");
 
 const server = express().use("/api", api).listen(0);
@@ -90,4 +96,30 @@ test("rejects bad input", async () => {
   for (const bad of cases) {
     assert.equal((await call("", "POST", bad as Draft)).status, 400, JSON.stringify(bad));
   }
+});
+
+test("cv: save per application, keep editing, restore the saved one", async () => {
+  const live = join(cvDir, "index.html");
+  const stakeCv = "<head></head>stake cv";
+  const saved = () => readdirSync(join(cvDir, "versions")).filter((f) => f.startsWith("1-"));
+  const stake = (await (await call("", "POST", { ...valid, company: "Stake Ltd" })).json()) as Application;
+  assert.equal(stake.has_cv, false);
+  assert.equal((await call(`/${stake.id}/cv/restore`, "POST")).status, 404);
+  assert.equal((await call("/9999/cv", "POST")).status, 404);
+
+  writeFileSync(live, stakeCv);
+  assert.equal((await call(`/${stake.id}/cv`, "POST")).status, 204);
+  assert.equal(await (await call(`/${stake.id}/cv`)).text(), `<head><base href="http://localhost:3000/"></head>stake cv`); // viewer page
+  assert.equal((await call("/9999/cv")).status, 404);
+  writeFileSync(live, "dominator cv"); // keep editing the working copy
+  assert.equal(((await (await call("")).json()) as Application[])[0].has_cv, true);
+
+  assert.equal((await call(`/${stake.id}/cv/restore`, "POST")).status, 204);
+  assert.equal(readFileSync(live, "utf8"), stakeCv);
+  assert.equal(readFileSync(join(cvDir, "versions", "_previous.html"), "utf8"), "dominator cv");
+
+  await call(`/${stake.id}`, "PUT", { ...valid, company: "Stake Pty" }); // rename, then re-save: still one file
+  await call(`/${stake.id}/cv`, "POST");
+  assert.deepEqual(saved(), [`${stake.id}-stake-pty.html`]);
+  await call(`/${stake.id}`, "DELETE");
 });

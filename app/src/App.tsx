@@ -14,7 +14,7 @@ const PRIORITY_COLORS: Record<Priority, string> = { High: "#22c55e", Medium: "#f
 const APPROACH_ICONS: Record<Approach, string> = { Advertised: "🔥", "Cold approach": "❄️" }; // hot = live advert
 const CLOSED: Status[] = ["Offer", "Rejected"];
 // ISO codes for flagcdn.com images: Windows has no flag emoji glyphs (they render as "NZ"). Remote isn't a country, so it gets 🌐.
-const FLAGS: Record<Location, string> = { "New Zealand": "nz", Australia: "au", "United Kingdom": "gb", "United States": "us", Poland: "pl", Sweden: "se", Gibraltar: "gi", Spain: "es", Romania: "ro", Europe: "eu", Remote: "" };
+const FLAGS: Record<Location, string> = { "New Zealand": "nz", Australia: "au", "United Kingdom": "gb", "United States": "us", Poland: "pl", Sweden: "se", Gibraltar: "gi", Spain: "es", Romania: "ro", Moldova: "md", Europe: "eu", Remote: "" };
 
 // Derived from id, not stored. Golden-angle hue keeps consecutive ids far apart on the colour wheel.
 // ponytail: not user-pickable; add color/emoji columns to applications if you want to choose your own.
@@ -64,6 +64,15 @@ const Menu = styled.div`
   button:hover { background: var(--bg); }
 `;
 const ErrorText = styled.p`color: var(--danger);`;
+// An A4 page is 794px wide at 96dpi; a bit more leaves room for the page margin.
+const Viewer = styled.dialog`
+  width: min(860px, calc(100vw - 32px)); height: calc(100vh - 32px); max-height: none; padding: 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); color: var(--text); flex-direction: column; gap: 8px;
+  &[open] { display: flex; }
+  &::backdrop { background: rgb(0 0 0 / 0.5); }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  iframe { flex: 1; width: 100%; border: 1px solid var(--line); background: #fff; }
+`;
 const TechCell = styled(Pills)`max-width: 260px;`;
 
 const Ext = (props: ComponentProps<"a">) => <a target="_blank" rel="noreferrer" {...props} />;
@@ -91,6 +100,24 @@ function DotPicker<T extends string>({ value, options, colors, label, onPick }:
   );
 }
 
+// Shows the CV saved for one application. Mounted = open (same pattern as Form). Sandboxed: it's a document, it never needs to run scripts.
+function CvViewer({ row, onClose }: { row: Application; onClose: () => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => { if (!ref.current?.open) ref.current?.showModal(); }, []);
+  return (
+    <Viewer ref={ref} onClose={onClose}>
+      <header>
+        <div>
+          <strong>{row.company}: CV as saved</strong>
+          <Muted>Styling and images come from the CV dev server (pnpm dev in cv/).</Muted>
+        </div>
+        <Button onClick={() => ref.current?.close()}>Close</Button>
+      </header>
+      <iframe sandbox="" src={`/api/applications/${row.id}/cv`} title={`CV saved for ${row.company}`} />
+    </Viewer>
+  );
+}
+
 export default function App() {
   const [rows, setRows] = useState<Application[]>([]);
   const [filter, setFilter] = useState<"All" | Status>("All");
@@ -99,6 +126,7 @@ export default function App() {
   const [sort, setSort] = useState<{ key: "priority" | "status"; desc: boolean } | null>(null);
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Draft | null>(null); // null = closed, object = form open (no id = new)
+  const [viewing, setViewing] = useState<Application | null>(null);
   const [error, setError] = useState("");
 
   const reload = async () => setRows(await api.list());
@@ -117,6 +145,13 @@ export default function App() {
   };
   const patch = (row: Application, change: Partial<Application>) =>
     api.update(row.id, { ...row, ...change }).then(reload).then(() => setError(""), (e: Error) => setError(e.message));
+  // The CV is the file cv/index.html: "save" pins its current contents to this application, "restore" copies them back.
+  const saveCv = (r: Application) =>
+    (!r.has_cv || confirm(`Overwrite ${r.company}'s saved CV with the current cv/index.html?`)) &&
+    api.saveCv(r.id).then(reload).then(() => setError(""), (e: Error) => setError(e.message));
+  const restoreCv = (r: Application) =>
+    confirm(`Replace cv/index.html with the CV saved for ${r.company}? The current one is kept as cv/versions/_previous.html.`) &&
+    api.restoreCv(r.id).then(() => setError(""), (e: Error) => setError(e.message));
 
   // Sorts by position in PRIORITIES / STATUSES; stable, so ties keep the server's order. null = server order.
   const q = query.trim().toLowerCase();
@@ -178,7 +213,7 @@ export default function App() {
         <Table>
           <thead>
             <tr>
-              {sortTh("priority", "Priority")}<th>Company</th><th>Technologies</th><th>Location</th><th>Source</th>{sortTh("status", "Status")}<th>Approach</th><th>Applied</th><th>Follow up</th><th>Contact</th><th />
+              {sortTh("priority", "Priority")}<th>Company</th><th>Technologies</th><th>Location</th><th>Source</th>{sortTh("status", "Status")}<th>Approach</th><th>Applied</th><th>Follow up</th><th>Contact</th><th>CV</th><th />
             </tr>
           </thead>
           <tbody>
@@ -226,14 +261,22 @@ export default function App() {
                     </Person>
                   ))}
                 </td>
+                <td>
+                  <Links>
+                    {r.has_cv && <Button onClick={() => setViewing(r)}>View</Button>}
+                    {r.has_cv && <Button onClick={() => restoreCv(r)}>Restore</Button>}
+                    <Button onClick={() => saveCv(r)}>{r.has_cv ? "Re-save" : "Save"}</Button>
+                  </Links>
+                </td>
                 <td><Button onClick={() => setEditing(r)}>Edit</Button></td>
               </tr>
             ))}
-            {!shown.length && <tr><td colSpan={11}><Muted>Nothing here yet.</Muted></td></tr>}
+            {!shown.length && <tr><td colSpan={12}><Muted>Nothing here yet.</Muted></td></tr>}
           </tbody>
         </Table>
       </Card>
 
+      {viewing && <CvViewer row={viewing} onClose={() => setViewing(null)} />}
       {editing && (
         <Form key={editingId ?? "new"} row={editing} suggestions={suggestions} onSave={save}
           onDelete={editingId ? () => del(editingId) : undefined} onClose={() => setEditing(null)} />

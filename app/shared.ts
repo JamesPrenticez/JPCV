@@ -6,7 +6,7 @@ export const LEVELS = ["Junior", "Intermediate", "Senior"] as const;
 export const ROLE_TYPES = ["Frontend", "Backend", "Full stack"] as const;
 export const APPROACHES = ["Advertised", "Cold approach"] as const; // cold = no advert, you reached out first
 export const PRIORITIES = ["High", "Medium", "Low"] as const; // list order = sort order
-export const LOCATIONS = ["New Zealand", "Australia", "United Kingdom", "United States", "Poland", "Sweden", "Gibraltar", "Spain", "Romania", "Europe", "Remote"] as const;
+export const LOCATIONS = ["New Zealand", "Australia", "United Kingdom", "United States", "Poland", "Sweden", "Gibraltar", "Spain", "Romania", "Moldova", "Europe", "Remote"] as const;
 
 export type Priority = (typeof PRIORITIES)[number];
 export type Status = (typeof STATUSES)[number];
@@ -35,6 +35,7 @@ export type Application = {
   technologies: string[]; // buzzwords from the advert, e.g. ["TypeScript", "Pixi.js", "GDD"]
   contacts: Contact[]; // blank ones are dropped by the server
   notes: string;
+  has_cv: boolean; // a saved copy of the CV exists in cv/versions/; derived, not a column
 };
 
 /** What the form holds and the client sends; the server validates it and fills in the rest. */

@@ -17,3 +17,5 @@ export const list = () => call<Application[]>("");
 export const create = (row: Draft) => call<Application>("", "POST", row);
 export const update = (id: number, row: Draft) => call<Application>(`/${id}`, "PUT", row);
 export const remove = (id: number) => call<null>(`/${id}`, "DELETE");
+export const saveCv = (id: number) => call<null>(`/${id}/cv`, "POST");
+export const restoreCv = (id: number) => call<null>(`/${id}/cv/restore`, "POST");
