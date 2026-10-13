@@ -36,7 +36,11 @@ export type Application = {
   contacts: Contact[]; // blank ones are dropped by the server
   notes: string;
   has_cv: boolean; // a saved copy of the CV exists in cv/versions/; derived, not a column
+  has_cover_letter: boolean; // same, in cv/cover-letters/
 };
+
+/** The two documents saved per application; also the API path segment. */
+export type Doc = "cv" | "cover-letter";
 
 /** What the form holds and the client sends; the server validates it and fills in the rest. */
 export type Draft = Partial<Application>;

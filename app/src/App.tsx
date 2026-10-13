@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import styled from "styled-components";
-import { APPROACHES, PRIORITIES, STATUSES, type Application, type Approach, type Draft, type Location, type Priority, type Status } from "../shared.ts";
+import { APPROACHES, PRIORITIES, STATUSES, type Application, type Approach, type Doc, type Draft, type Location, type Priority, type Status } from "../shared.ts";
 import * as api from "./api.ts";
 import Form from "./Form.tsx";
 import { Button, GlobalStyle } from "./styles.ts";
@@ -100,20 +100,26 @@ function DotPicker<T extends string>({ value, options, colors, label, onPick }:
   );
 }
 
-// Shows the CV saved for one application. Mounted = open (same pattern as Form). Sandboxed: it's a document, it never needs to run scripts.
-function CvViewer({ row, onClose }: { row: Application; onClose: () => void }) {
+// What each saved document is called, which file you edit, and which flag says a copy exists.
+const DOCS: Record<Doc, { label: string; live: string; has: (r: Application) => boolean }> = {
+  cv: { label: "CV", live: "cv/index.html", has: (r) => r.has_cv },
+  "cover-letter": { label: "Cover letter", live: "cv/cover-letter.md", has: (r) => r.has_cover_letter },
+};
+
+// Shows the CV or cover letter saved for one application. Mounted = open (same pattern as Form). Sandboxed: it's a document, it never needs to run scripts.
+function DocViewer({ row, doc, onClose }: { row: Application; doc: Doc; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => { if (!ref.current?.open) ref.current?.showModal(); }, []);
   return (
     <Viewer ref={ref} onClose={onClose}>
       <header>
         <div>
-          <strong>{row.company}: CV as saved</strong>
-          <Muted>Styling and images come from the CV dev server (pnpm dev in cv/).</Muted>
+          <strong>{row.company}: {DOCS[doc].label} as saved</strong>
+          {doc === "cv" && <Muted>Styling and images come from the CV dev server (pnpm dev in cv/).</Muted>}
         </div>
         <Button onClick={() => ref.current?.close()}>Close</Button>
       </header>
-      <iframe sandbox="" src={`/api/applications/${row.id}/cv`} title={`CV saved for ${row.company}`} />
+      <iframe sandbox="" src={`/api/applications/${row.id}/${doc}`} title={`${DOCS[doc].label} saved for ${row.company}`} />
     </Viewer>
   );
 }
@@ -126,7 +132,7 @@ export default function App() {
   const [sort, setSort] = useState<{ key: "priority" | "status"; desc: boolean } | null>(null);
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Draft | null>(null); // null = closed, object = form open (no id = new)
-  const [viewing, setViewing] = useState<Application | null>(null);
+  const [viewing, setViewing] = useState<{ row: Application; doc: Doc } | null>(null);
   const [error, setError] = useState("");
 
   const reload = async () => setRows(await api.list());
@@ -145,13 +151,13 @@ export default function App() {
   };
   const patch = (row: Application, change: Partial<Application>) =>
     api.update(row.id, { ...row, ...change }).then(reload).then(() => setError(""), (e: Error) => setError(e.message));
-  // The CV is the file cv/index.html: "save" pins its current contents to this application, "restore" copies them back.
-  const saveCv = (r: Application) =>
-    (!r.has_cv || confirm(`Overwrite ${r.company}'s saved CV with the current cv/index.html?`)) &&
-    api.saveCv(r.id).then(reload).then(() => setError(""), (e: Error) => setError(e.message));
-  const restoreCv = (r: Application) =>
-    confirm(`Replace cv/index.html with the CV saved for ${r.company}? The current one is kept as cv/versions/_previous.html.`) &&
-    api.restoreCv(r.id).then(() => setError(""), (e: Error) => setError(e.message));
+  // The CV and cover letter are the files cv/index.html and cv/cover-letter.md: "save" pins current contents to this application, "restore" copies them back.
+  const saveDoc = (r: Application, doc: Doc) =>
+    (!DOCS[doc].has(r) || confirm(`Overwrite ${r.company}'s saved ${DOCS[doc].label} with the current ${DOCS[doc].live}?`)) &&
+    api.saveDoc(r.id, doc).then(reload).then(() => setError(""), (e: Error) => setError(e.message));
+  const restoreDoc = (r: Application, doc: Doc) =>
+    confirm(`Replace ${DOCS[doc].live} with the ${DOCS[doc].label} saved for ${r.company}? The current one is kept as _previous in the same folder.`) &&
+    api.restoreDoc(r.id, doc).then(() => setError(""), (e: Error) => setError(e.message));
 
   // Sorts by position in PRIORITIES / STATUSES; stable, so ties keep the server's order. null = server order.
   const q = query.trim().toLowerCase();
@@ -213,7 +219,7 @@ export default function App() {
         <Table>
           <thead>
             <tr>
-              {sortTh("priority", "Priority")}<th>Company</th><th>Technologies</th><th>Location</th><th>Source</th>{sortTh("status", "Status")}<th>Approach</th><th>Applied</th><th>Follow up</th><th>Contact</th><th>CV</th><th />
+              {sortTh("priority", "Priority")}<th>Company</th><th>Technologies</th><th>Location</th><th>Source</th>{sortTh("status", "Status")}<th>Approach</th><th>Applied</th><th>Follow up</th><th>Contact</th><th>CV</th><th>Cover letter</th><th />
             </tr>
           </thead>
           <tbody>
@@ -261,22 +267,24 @@ export default function App() {
                     </Person>
                   ))}
                 </td>
-                <td>
-                  <Links>
-                    {r.has_cv && <Button onClick={() => setViewing(r)}>View</Button>}
-                    {r.has_cv && <Button onClick={() => restoreCv(r)}>Restore</Button>}
-                    <Button onClick={() => saveCv(r)}>{r.has_cv ? "Re-save" : "Save"}</Button>
-                  </Links>
-                </td>
+                {(Object.keys(DOCS) as Doc[]).map((doc) => (
+                  <td key={doc}>
+                    <Links>
+                      {DOCS[doc].has(r) && <Button onClick={() => setViewing({ row: r, doc })}>View</Button>}
+                      {DOCS[doc].has(r) && <Button onClick={() => restoreDoc(r, doc)}>Restore</Button>}
+                      <Button onClick={() => saveDoc(r, doc)}>{DOCS[doc].has(r) ? "Re-save" : "Save"}</Button>
+                    </Links>
+                  </td>
+                ))}
                 <td><Button onClick={() => setEditing(r)}>Edit</Button></td>
               </tr>
             ))}
-            {!shown.length && <tr><td colSpan={12}><Muted>Nothing here yet.</Muted></td></tr>}
+            {!shown.length && <tr><td colSpan={13}><Muted>Nothing here yet.</Muted></td></tr>}
           </tbody>
         </Table>
       </Card>
 
-      {viewing && <CvViewer row={viewing} onClose={() => setViewing(null)} />}
+      {viewing && <DocViewer {...viewing} onClose={() => setViewing(null)} />}
       {editing && (
         <Form key={editingId ?? "new"} row={editing} suggestions={suggestions} onSave={save}
           onDelete={editingId ? () => del(editingId) : undefined} onClose={() => setEditing(null)} />

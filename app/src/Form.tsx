@@ -23,7 +23,7 @@ const Wide = styled.div`grid-column: 1 / -1;`;
 const Rule = styled(Wide)`padding-bottom: 10px; border-bottom: 1px solid var(--line);`;
 
 const BLANK: Contact = { name: "", role: "", email: "", phone: "", linkedin: "" };
-type Field = Exclude<keyof Application, "contacts" | "has_cv">; // the plain inputs; contacts have their own list below, has_cv is derived
+type Field = Exclude<keyof Application, "contacts" | "has_cv" | "has_cover_letter">; // the plain inputs; contacts have their own list below, has_* are derived
 
 // Type to autocomplete (native datalist); Enter, comma, picking a suggestion or leaving the field turns the text into a pill.
 // The list travels with the form as a hidden comma-joined "technologies" field, which is what the server parses.

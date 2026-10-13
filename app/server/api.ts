@@ -2,21 +2,35 @@ import express, { type ErrorRequestHandler } from "express";
 import { DatabaseSync } from "node:sqlite";
 import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { APPROACHES, LEVELS, LOCATIONS, PRIORITIES, ROLE_TYPES, SOURCES, STATUSES, type Application, type Contact } from "../shared.ts";
+import { APPROACHES, LEVELS, LOCATIONS, PRIORITIES, ROLE_TYPES, SOURCES, STATUSES, type Application, type Contact, type Doc } from "../shared.ts";
 
-type Fields = Omit<Application, "id" | "technologies" | "contacts" | "has_cv"> & { technologies: string; contacts: string }; // JSON arrays in the DB
+type Fields = Omit<Application, "id" | "technologies" | "contacts" | "has_cv" | "has_cover_letter"> & { technologies: string; contacts: string }; // JSON arrays in the DB
 
 const file = process.env.DB_PATH ?? resolve(import.meta.dirname, "../data/jobs.db");
 if (file !== ":memory:") mkdirSync(dirname(file), { recursive: true });
 
-// A CV as sent to one application lives at cv/versions/<id>-<company>.html. Plain files in the repo, so git backs them up and diffs them.
-// ponytail: deleting an application leaves its file behind, and a reused id would inherit it; delete the file in DELETE if that bites.
-const cvLive = join(process.env.CV_DIR ?? resolve(import.meta.dirname, "../../cv"), "index.html");
-const cvVersions = join(dirname(cvLive), "versions");
-mkdirSync(cvVersions, { recursive: true });
-const savedCv = (id: number) => readdirSync(cvVersions).find((f) => f.startsWith(`${id}-`));
+// The CV and the cover letter each have a working file you edit; what was sent to one application is a copy of it:
+//   cv/index.html -> cv/versions/<id>-<company>.html      cv/cover-letter.md -> cv/cover-letters/<id>-<company>.md
+// Plain files in the repo, so git backs them up and diffs them.
+// ponytail: deleting an application leaves its files behind, and a reused id would inherit them; delete them in DELETE if that bites.
+const cvDir = process.env.CV_DIR ?? resolve(import.meta.dirname, "../../cv");
 // The viewer needs the CV's stylesheet and images, which only the CV's own dev server serves (pnpm dev in cv/).
 const cvUrl = process.env.CV_URL ?? "http://localhost:3000";
+// view = how the viewer iframe shows a saved copy. A letter is shown as raw markdown in a light page (plain text would follow the OS dark mode: white on the iframe's white).
+// ponytail: add a markdown renderer if the raw text bothers you.
+const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const docs: Record<Doc, { live: string; dir: string; ext: string; type: string; view: (text: string) => string }> = {
+  cv: {
+    live: join(cvDir, "index.html"), dir: join(cvDir, "versions"), ext: "html", type: "html",
+    view: (html) => html.replace(/<head[^>]*>/i, (head) => `${head}<base href="${cvUrl}/">`), // <base> sends ./imgs and /styles to the CV dev server
+  },
+  "cover-letter": {
+    live: join(cvDir, "cover-letter.md"), dir: join(cvDir, "cover-letters"), ext: "md", type: "html",
+    view: (md) => `<!doctype html><meta name="color-scheme" content="light"><pre style="margin:24px;white-space:pre-wrap;font:15px/1.5 system-ui,sans-serif;color:#000">${esc(md)}</pre>`,
+  },
+};
+for (const d of Object.values(docs)) mkdirSync(d.dir, { recursive: true });
+const saved = (doc: Doc, id: number) => readdirSync(docs[doc].dir).find((f) => f.startsWith(`${id}-`));
 
 const db = new DatabaseSync(file);
 // `technologies` and `contacts` are JSON arrays so SQL can unnest them, e.g. most-wanted tech first:
@@ -127,7 +141,7 @@ const techs = (text: string) =>
   text.split(/[,\n]/).map((s) => s.trim()).filter((s, i, all) => s && all.findIndex((t) => t.toLowerCase() === s.toLowerCase()) === i);
 
 const out = (row?: Record<string, unknown>) =>
-  row && { ...row, technologies: JSON.parse(String(row.technologies)), contacts: JSON.parse(String(row.contacts)), has_cv: !!savedCv(Number(row.id)) };
+  row && { ...row, technologies: JSON.parse(String(row.technologies)), contacts: JSON.parse(String(row.contacts)), has_cv: !!saved("cv", Number(row.id)), has_cover_letter: !!saved("cover-letter", Number(row.id)) };
 
 const byPriority = `CASE priority ${PRIORITIES.map((p, i) => `WHEN '${p}' THEN ${i}`).join(" ")} END`;
 const list = db.prepare(`SELECT * FROM applications ORDER BY ${byPriority}, date_applied DESC, id DESC`);
@@ -154,31 +168,32 @@ api.delete("/applications/:id", (req, res) => {
   remove.run(Number(req.params.id)).changes ? res.sendStatus(204) : res.status(404).json({ error: "not found" });
 });
 
-// Save the CV as it is now against this application (overwrites its earlier copy).
-api.post("/applications/:id/cv", (req, res) => {
-  const row = one.get(Number(req.params.id));
-  if (!row) return void res.status(404).json({ error: "not found" });
-  const old = savedCv(Number(row.id));
-  if (old) rmSync(join(cvVersions, old)); // the company may have been renamed since
-  const slug = String(row.company).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  copyFileSync(cvLive, join(cvVersions, `${row.id}-${slug}.html`));
-  res.sendStatus(204);
-});
-// The saved CV as a page, for the viewer iframe. <base> sends its ./imgs and /styles links to the CV dev server.
-api.get("/applications/:id/cv", (req, res) => {
-  const saved = savedCv(Number(req.params.id));
-  if (!saved) return void res.status(404).json({ error: "no saved CV" });
-  const html = readFileSync(join(cvVersions, saved), "utf8");
-  res.type("html").send(html.replace(/<head[^>]*>/i, (head) => `${head}<base href="${cvUrl}/">`));
-});
-// Make this application's saved CV the working one. The working one is kept as _previous.html (one-step undo).
-api.post("/applications/:id/cv/restore", (req, res) => {
-  const saved = savedCv(Number(req.params.id));
-  if (!saved) return void res.status(404).json({ error: "no saved CV" });
-  copyFileSync(cvLive, join(cvVersions, "_previous.html"));
-  copyFileSync(join(cvVersions, saved), cvLive);
-  res.sendStatus(204);
-});
+for (const [doc, { live, dir, ext, type, view }] of Object.entries(docs) as [Doc, (typeof docs)[Doc]][]) {
+  // Save the working file as it is now against this application (overwrites its earlier copy).
+  api.post(`/applications/:id/${doc}`, (req, res) => {
+    const row = one.get(Number(req.params.id));
+    if (!row) return void res.status(404).json({ error: "not found" });
+    const old = saved(doc, Number(row.id));
+    if (old) rmSync(join(dir, old)); // the company may have been renamed since
+    const slug = String(row.company).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    copyFileSync(live, join(dir, `${row.id}-${slug}.${ext}`));
+    res.sendStatus(204);
+  });
+  // The saved copy as a page, for the viewer iframe.
+  api.get(`/applications/:id/${doc}`, (req, res) => {
+    const file = saved(doc, Number(req.params.id));
+    if (!file) return void res.status(404).json({ error: `no saved ${doc}` });
+    res.type(type).send(view(readFileSync(join(dir, file), "utf8")));
+  });
+  // Make this application's saved copy the working one. The working one is kept as _previous.<ext> (one-step undo).
+  api.post(`/applications/:id/${doc}/restore`, (req, res) => {
+    const file = saved(doc, Number(req.params.id));
+    if (!file) return void res.status(404).json({ error: `no saved ${doc}` });
+    copyFileSync(live, join(dir, `_previous.${ext}`));
+    copyFileSync(join(dir, file), live);
+    res.sendStatus(204);
+  });
+}
 
 const onError: ErrorRequestHandler = (err: HttpError, req, res, _next) => {
   res.status(err.status ?? 500).json({ error: err.message });

@@ -26,5 +26,6 @@ dist-ssr
 # Job tracker database (personal data)
 app/data/
 
-# One-step undo for "Restore CV" in the job tracker
+# One-step undo for "Restore" CV / cover letter in the job tracker
 cv/versions/_previous.html
+cv/cover-letters/_previous.md

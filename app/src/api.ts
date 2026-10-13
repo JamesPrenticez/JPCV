@@ -1,4 +1,4 @@
-import type { Application, Draft } from "../shared.ts";
+import type { Application, Doc, Draft } from "../shared.ts";
 
 async function call<T>(path: string, method = "GET", body?: Draft): Promise<T> {
   const res = await fetch(`/api/applications${path}`, {
@@ -17,5 +17,5 @@ export const list = () => call<Application[]>("");
 export const create = (row: Draft) => call<Application>("", "POST", row);
 export const update = (id: number, row: Draft) => call<Application>(`/${id}`, "PUT", row);
 export const remove = (id: number) => call<null>(`/${id}`, "DELETE");
-export const saveCv = (id: number) => call<null>(`/${id}/cv`, "POST");
-export const restoreCv = (id: number) => call<null>(`/${id}/cv/restore`, "POST");
+export const saveDoc = (id: number, doc: Doc) => call<null>(`/${id}/${doc}`, "POST");
+export const restoreDoc = (id: number, doc: Doc) => call<null>(`/${id}/${doc}/restore`, "POST");

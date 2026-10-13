@@ -123,3 +123,30 @@ test("cv: save per application, keep editing, restore the saved one", async () =
   assert.deepEqual(saved(), [`${stake.id}-stake-pty.html`]);
   await call(`/${stake.id}`, "DELETE");
 });
+
+test("cover letter: same flow, as .md in its own folder, independent of the CV", async () => {
+  const live = join(cvDir, "cover-letter.md");
+  const dir = join(cvDir, "cover-letters");
+  const stake = (await (await call("", "POST", { ...valid, company: "Stake Ltd" })).json()) as Application;
+  assert.equal(stake.has_cover_letter, false);
+  assert.equal((await call(`/${stake.id}/cover-letter`)).status, 404);
+  assert.equal((await call(`/${stake.id}/cover-letter/restore`, "POST")).status, 404);
+
+  writeFileSync(live, "Dear Stake,\n\n**Hire me.**");
+  assert.equal((await call(`/${stake.id}/cover-letter`, "POST")).status, 204);
+  assert.deepEqual(readdirSync(dir), [`${stake.id}-stake-ltd.md`]);
+  const viewed = await (await call(`/${stake.id}/cover-letter`)).text();
+  assert.match(viewed, /content="light"[^]*color:#000[^]*>Dear Stake,\n\n\*\*Hire me\.\*\*</); // raw markdown on a light page: readable in OS dark mode
+  writeFileSync(live, "a <b>&</b>");
+  await call(`/${stake.id}/cover-letter`, "POST");
+  assert.match(await (await call(`/${stake.id}/cover-letter`)).text(), />a &lt;b>&amp;&lt;\/b></); // text can't inject markup into the page
+  writeFileSync(live, "Dear Stake,\n\n**Hire me.**");
+  await call(`/${stake.id}/cover-letter`, "POST");
+  assert.equal(((await (await call("")).json()) as Application[])[0].has_cover_letter, true);
+
+  writeFileSync(live, "Dear Someone Else");
+  assert.equal((await call(`/${stake.id}/cover-letter/restore`, "POST")).status, 204);
+  assert.equal(readFileSync(live, "utf8"), "Dear Stake,\n\n**Hire me.**");
+  assert.equal(readFileSync(join(dir, "_previous.md"), "utf8"), "Dear Someone Else");
+  await call(`/${stake.id}`, "DELETE");
+});
