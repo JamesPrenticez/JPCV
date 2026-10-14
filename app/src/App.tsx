@@ -14,7 +14,7 @@ const PRIORITY_COLORS: Record<Priority, string> = { High: "#22c55e", Medium: "#f
 const APPROACH_ICONS: Record<Approach, string> = { Advertised: "🔥", "Cold approach": "❄️" }; // hot = live advert
 const CLOSED: Status[] = ["Offer", "Rejected"];
 // ISO codes for flagcdn.com images: Windows has no flag emoji glyphs (they render as "NZ"). Remote isn't a country, so it gets 🌐.
-const FLAGS: Record<Location, string> = { "New Zealand": "nz", Australia: "au", "United Kingdom": "gb", "United States": "us", Poland: "pl", Sweden: "se", Gibraltar: "gi", Spain: "es", Romania: "ro", Moldova: "md", Europe: "eu", Remote: "" };
+const FLAGS: Record<Location, string> = { Auckland: "nz", Christchurch: "nz", Dunedin: "nz", Hamilton: "nz", Queenstown: "nz", Wellington: "nz", Adelaide: "au", Melbourne: "au", Perth: "au", Sydney: "au", "United Kingdom": "gb", "United States": "us", Poland: "pl", Sweden: "se", Gibraltar: "gi", Spain: "es", Romania: "ro", Moldova: "md", Europe: "eu", Remote: "" };
 
 // Derived from id, not stored. Golden-angle hue keeps consecutive ids far apart on the colour wheel.
 // ponytail: not user-pickable; add color/emoji columns to applications if you want to choose your own.

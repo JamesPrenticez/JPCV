@@ -6,7 +6,7 @@ export const LEVELS = ["Junior", "Intermediate", "Senior"] as const;
 export const ROLE_TYPES = ["Frontend", "Backend", "Full stack"] as const;
 export const APPROACHES = ["Advertised", "Cold approach"] as const; // cold = no advert, you reached out first
 export const PRIORITIES = ["High", "Medium", "Low"] as const; // list order = sort order
-export const LOCATIONS = ["New Zealand", "Australia", "United Kingdom", "United States", "Poland", "Sweden", "Gibraltar", "Spain", "Romania", "Moldova", "Europe", "Remote"] as const;
+export const LOCATIONS = ["Auckland", "Christchurch", "Dunedin", "Hamilton", "Queenstown", "Wellington", "Adelaide", "Melbourne", "Perth", "Sydney", "United Kingdom", "United States", "Poland", "Sweden", "Gibraltar", "Spain", "Romania", "Moldova", "Europe", "Remote"] as const;
 
 export type Priority = (typeof PRIORITIES)[number];
 export type Status = (typeof STATUSES)[number];
