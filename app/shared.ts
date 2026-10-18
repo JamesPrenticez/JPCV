@@ -30,6 +30,7 @@ export type Application = {
   approach: Approach;
   date_applied: string; // YYYY-MM-DD, "" if unset
   follow_up_date: string;
+  date_rejected: string;
   company_url: string;
   job_url: string;
   technologies: string[]; // buzzwords from the advert, e.g. ["TypeScript", "Pixi.js", "GDD"]

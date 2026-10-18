@@ -42,6 +42,26 @@ test("create, list, update, delete", async () => {
   assert.equal((await call("/9999", "PUT", valid)).status, 404);
 });
 
+test("rejecting sets priority Low and stamps the date, once", async () => {
+  const today = new Date().toLocaleDateString("en-CA");
+  const created = (await (await call("", "POST", { ...valid, priority: "High" })).json()) as Application;
+  assert.equal(created.date_rejected, "");
+
+  const rejected = (await (await call(`/${created.id}`, "PUT", { ...created, status: "Rejected" })).json()) as Application;
+  assert.equal(rejected.priority, "Low");
+  assert.equal(rejected.date_rejected, today);
+
+  // Already rejected: a later priority/date change sticks.
+  const kept = (await (await call(`/${created.id}`, "PUT", { ...rejected, priority: "High", date_rejected: "2026-01-02" })).json()) as Application;
+  assert.equal(kept.priority, "High");
+  assert.equal(kept.date_rejected, "2026-01-02");
+
+  // A date typed in the same save wins over today.
+  const typed = (await (await call("", "POST", { ...valid, priority: "High" })).json()) as Application;
+  assert.equal(((await (await call(`/${typed.id}`, "PUT", { ...typed, status: "Rejected", date_rejected: "2026-01-03" })).json()) as Application).date_rejected, "2026-01-03");
+  for (const r of (await (await call("")).json()) as Application[]) await call(`/${r.id}`, "DELETE");
+});
+
 test("technologies: free text becomes a unique list, and survives a round trip", async () => {
   const created = (await (await call("", "POST", { ...valid, technologies: "TypeScript, pixi.js,\nGDD,, typescript " } as unknown as Draft)).json()) as Application;
   assert.deepEqual(created.technologies, ["TypeScript", "pixi.js", "GDD"]);

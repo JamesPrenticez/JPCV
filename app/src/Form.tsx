@@ -142,6 +142,7 @@ export default function Form({ row, suggestions, onSave, onDelete, onClose }: Pr
           {select("Approach", "approach", APPROACHES)}
           {input("Date applied / contacted", "date_applied", { type: "date" })}
           {input("Follow up on", "follow_up_date", { type: "date" })}
+          {input("Date rejected", "date_rejected", { type: "date" })}
           {input("Company page", "company_url", { type: "url", placeholder: "https://", wide: true })}
           {input("Job advert", "job_url", { type: "url", placeholder: "https://", wide: true })}
           <TechInput initial={row.technologies ?? []} suggestions={suggestions} />

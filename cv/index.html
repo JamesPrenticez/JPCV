@@ -22,7 +22,7 @@
     <div class="header">
       <div class="header__left">
         <h1>James Prentice</h1>
-        <h3>MID-WEIGHT - FULL STACK DEVELOPER</h3>
+        <h3>INTERMEDIATE FULL-STACK DEVELOPER</h3>
       </div>
       <aside class="header__right">
         <div>
@@ -33,10 +33,35 @@
           <img src="./imgs/location.svg" width="18px" height="18px" alt="location">
           <p>Hokitika, New Zealand</p>
           <div></div>
-          <small class="reduce">NZ citizen relocating to Australia</small>
+          <small class="reduce">NZ citizen open to relocating to Christchurch</small>
         </div>
       </aside>
     </div>
+
+    <section>
+      <h2>Professional Summary</h2>
+      <p>Software engineer with 4+ years of commercial software development experience building production web
+        applications, reusable frontend components, backend services and secure API integrations. Strong experience
+        with React, TypeScript, JavaScript and responsive UI development, with additional experience in Python, Flask,
+        SQL and Azure serverless deployments. Proven ability to deliver complex features, improve performance and
+        accessibility, and collaborate across engineering, design and stakeholder teams. Experienced in maintaining
+        established codebases, reviewing code and delivering reliable software in production environments.</p>
+    </section>
+
+    <section>
+      <h2>Technical Skills</h2>
+      <p><strong>Frontend:</strong> React, TypeScript, JavaScript, HTML, CSS, Tailwind, TanStack Query, responsive
+        design,
+        accessibility, PixiJS, WebGL</p>
+      <p><strong>UI Engineering:</strong> Reusable component libraries, Storybook, Figma implementation, CSS and canvas
+        animations, frontend performance optimisation</p>
+      <p><strong>Backend &amp; APIs:</strong> Node.js, Express, Koa, Python, Flask, REST APIs, serverless functions</p>
+      <p><strong>Cloud &amp; Data:</strong> Microsoft Azure, Azure Active Directory, SQLite, T-SQL, SQL Server,
+        BigInt-based financial ledger handling</p>
+      <p><strong>Security &amp; Quality:</strong> JWT authentication, HMAC-SHA256, IP allow-listing, Zod, DOMPurify,
+        Vitest, Playwright, code reviews</p>
+      <p><strong>Development Tools:</strong> Git, Claude, Vite, NX monorepo</p>
+    </section>
 
     <section class="experiance">
       <h2>Professional Experience</h2>
@@ -46,11 +71,13 @@
         <div>
           <h3>Animo Gaming</h3>
           <span>
-            <h5>Full-time, Full Stack Developer</h5>
+            <h5>Full-time, Full-Stack Developer</h5>
             <h5><em>(Aug 2024 - Present)</em></h5>
           </span>
         </div>
       </div>
+      <p>Develop and maintain production gaming applications, shared frontend systems and backend integrations across
+        burst games and traditional casino table games.</p>
 
       <div class="timeline">
 
@@ -58,58 +85,20 @@
           <div class="timeline__item__dot"></div>
           <div class="timeline__item__content">
             <span>
-              <h4>Never Give Up (original casino burst game)</h4>
+              <h4>Never Give Up &mdash; Burst Game</h4>
             </span>
             <ul>
-              <li>Built the provably fair verification system with seed history, in-browser SHA-256 checks of revealed
-                server seeds against the hash committed before play, and one-click
-                "Verify this round" from bet history. Backed by a server function that replays every game mode's RNG
-                draws from a seed triple. Stack: TypeScript, React, Express, SQLite.</li>
-              <li>Kept client and server payouts in sync with a shared cash-out multiplier helper, and wrote a generator
-                script that produces the per-volatility RTP multiplier table the game reads from</li>
-              <li>Delivered design-led UI from Figma designs (difficulty, bonus-buy, battle-mode, game-info and
-                how-to-play
-                modals, intro screens, round history), responsive across desktop, mobile and landscape</li>
-              <li>Built the betting and control UI (bet input with a number stepper, autoplay with turbo play, and the
-                cash-out flow with its animated cash-out and max-win pop-ups)</li>
-              <li>Built the final win screen (Spine character animation, star and sparkle effects) with PixiJS/WebGL
+              <li>Built a provably fair verification system featuring seed history, browser-side SHA-256 verification
+                and server-side replay of game RNG draws</li>
+              <li>Kept client and server payout calculations consistent through shared cash-out multiplier logic and
+                developed a generator for RTP multiplier tables</li>
+              <li>Delivered responsive, design-led interfaces from Figma, including betting controls, autoplay, cash-out
+                flows, game history and game information modals</li>
+              <li>Built animated win screens and visual effects using PixiJS, WebGL, Spine animations, CSS and canvas
               </li>
-              <li>Improved first-load performance and removed jank by preloading modal art, gating the loading screen on
-                fonts, pre-warming textured panels and fixing Spine teardown order</li>
-              <li>Built parts of the reusable design-system UI kit (buttons, modals, overlay, tabs, sliders, steppers
-                etc.) for our Burst Games Storybook component library tested with Vitest</li>
-            </ul>
-          </div>
-        </div>
-        <div class="timeline__item">
-          <div class="timeline__item__dot"></div>
-          <div class="timeline__item__content">
-            <span>
-              <h4>Traditional Casino Table Games (Roulette, Black Jack, Baccarat)</h4>
-            </span>
-            <ul>
-              <li>Built the lobby-to-game iframe messaging system that syncs volume and mute state between the lobby and
-                embedded games, secured with a trusted-origins check</li>
-              <li>Built the server-driven, feature-flagged settings system (chat, history, audio, stream quality, info,
-                support and user balance) reused across all our table games</li>
-              <li>Extended server-side chat moderation with URL and profanity checks. Wired server-configured AFK
-                timers and the require-bet-to-chat business rule through to the client</li>
-              <li>Built the frontend game lobby (navbar, featured-game video with fallback, game cards, user menu and
-                footer), responsive across desktop, landscape and mobile</li>
-              <li>Built shared design-system UI components (buttons, inputs, tabs, accordion, marquee, toggle, modal)
-                for
-                our Traditional Games Storybook component library, tested with Vitest</li>
-              <li>Built many of the in-game modals and panels shared across the table games (a swipeable mobile settings
-                modal, audio and history modals, the AFK-timeout modal, per-game tutorials, game statistics modal and
-                favourites with hot/cold charts)</li>
-              <li>Created CSS and canvas animation effects for multiplier wins, game events and the scrolling winner
-                list: rotating stars, lightning bolts, spinners, glows and fades</li>
-              <li>Hardened translation content with DOMPurify on our JSON-to-HTML renderer and cache-busted, versioned
-                language files</li>
-              <li>Took over and cleaned up inherited code. Fixed and extended the blackjack dealer monitor (split hands,
-                player and dealer scores, duplicate-card bugs). Enhanced the roulette bet builder (saving state,
-                favourite-bet limits, mobile layout, overlay and z-index bugs), refactored Baccarat game grid and
-                history board</li>
+              <li>Improved initial-load performance and reduced UI jank through asset preloading, font-loading
+                coordination, texture pre-warming and animation lifecycle fixes</li>
+              <li>Developed reusable UI components for the Burst Games Storybook library, tested with Vitest</li>
             </ul>
           </div>
         </div>
@@ -118,39 +107,52 @@
           <div class="timeline__item__dot"></div>
           <div class="timeline__item__content">
             <span>
-              <h4>External Operator Integration (wallet &amp; game-launch APIs)</h4>
+              <h4>Traditional Casino Games &mdash; Roulette, Blackjack &amp; Baccarat</h4>
             </span>
             <ul>
-              <li>Built a two-way operator integration in our Koa/TypeScript game server. Inbound API calls to our
-                signed <code>/launch</code> (returns a game URL for the player session) and <code>/games</code>
-                (catalogue
-                grouped by provider) routes. Each request is checked against an IP allow-list and a base64 HMAC-SHA256
-                <code>Signature</code> of the raw body
-              </li>
-              <li>Implemented the outbound wallet contract: <code>/balance</code>, <code>/bet</code>, <code>/win</code>
-                and <code>/adjustment</code> (bet cancel) calls, each signed and carrying a unique request ID and
-                transaction ID, with wins linked to their original bet and rollbacks to the bet they cancel</li>
-              <li>Kept monetary values precise by converting between the BigInt ledger and per-currency minor units -
-                validated
-                every response with Zod and mapped the operator's 13 error codes (insufficient funds, bet limit etc.)
-                to game-server states</li>
-              <li>Documented the API as a Bruno collection and extended our mock operator to simulate failure cases for
-                testing</li>
+              <li>Built the responsive game lobby, including navigation, featured-game video fallbacks, game cards and
+                user menus</li>
+              <li>Developed a reusable, server-driven, feature-flagged settings system and iframe messaging between the
+                lobby and embedded games, with trusted-origin validation</li>
+              <li>Built shared Storybook components and in-game interfaces, including mobile settings, audio and
+                history modals, tutorials, statistics and favourites</li>
+              <li>Extended server-side chat moderation and configurable AFK behaviour; hardened translation rendering
+                with DOMPurify</li>
+              <li>Fixed inherited game logic and UI issues across blackjack, roulette and baccarat</li>
             </ul>
           </div>
         </div>
+
         <div class="timeline__item">
           <div class="timeline__item__dot"></div>
           <div class="timeline__item__content">
             <span>
-              <h4>Across All Projects</h4>
+              <h4>External Operator Integration &mdash; Wallet &amp; Game-Launch APIs</h4>
             </span>
             <ul>
-              <li>Shipped 240+ merged PRs across multiple projects and reviewed 35+ teammate PRs</li>
-              <li>Use Claude Code daily, kept on-track by using a CLAUDE.md file and project specific skills. Output
-                reviewed, tested and refactored before committing/merging. Cut token spend on shell output by about 50%
-                using RTK.
-              </li>
+              <li>Built a two-way operator integration in a Koa/TypeScript game server, including signed game-launch
+                and game-catalogue endpoints and outbound wallet operations</li>
+              <li>Implemented HMAC-SHA256 request signing, IP allow-list validation and transaction linkage across bets,
+                wins and cancellations</li>
+              <li>Preserved monetary precision using BigInt ledger conversions and currency minor units; validated
+                responses with Zod and mapped 13 operator error codes</li>
+              <li>Documented API contracts in Bruno and extended mock services to simulate integration failure
+                scenarios</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline__item">
+          <div class="timeline__item__dot"></div>
+          <div class="timeline__item__content">
+            <span>
+              <h4>Engineering Delivery</h4>
+            </span>
+            <ul>
+              <li>Shipped <strong>240+ merged pull requests</strong> across multiple projects and reviewed <strong>35+
+                  teammate pull requests</strong></li>
+              <li>Use Claude Code with project-specific instructions and skills, reviewing, testing and refactoring
+                generated output before committing or merging</li>
             </ul>
           </div>
         </div>
@@ -172,6 +174,8 @@
           </span>
         </div>
       </div>
+      <p>Worked across external websites, internal financial systems and customer-facing application prototypes in
+        collaborative engineering teams.</p>
 
       <div class="timeline">
         <div class="timeline__item">
@@ -183,15 +187,14 @@
               <a class="small-link" href="https://datacom.com" target="_blank">www.datacom.com</a>
             </span>
             <ul>
-              <li>Collaborated in large dev team working closely with internal stakeholders (marketing and design team)
-              </li>
-              <li>Enhanced and maintained core website components inside Adobe Experience Manager (AEM)
-              </li>
-              <li>Built modern AEM components utilising advanced techniques in vanilla HTML, CSS and Javascript</li>
-              <li>Improved accessibility (WCAG keyboard focus visibility) by adding focus styling to 75+ existing
+              <li>Collaborated with developers, marketing and design stakeholders to enhance and maintain core website
+                components in Adobe Experience Manager (AEM)</li>
+              <li>Built modern AEM components using HTML, CSS and JavaScript, applying advanced component-development
+                techniques</li>
+              <li>Improved keyboard accessibility by implementing visible focus styling across 75+ existing
                 components</li>
-              <li>Developed a proof of concept for the external customer account management portal in React/Typescript
-                with Redux RTK Query</li>
+              <li>Developed a proof of concept for an external customer account-management portal using React,
+                TypeScript and Redux Toolkit Query</li>
             </ul>
           </div>
         </div>
@@ -203,10 +206,10 @@
               <h5><em>(April 2023 - July 2023)</em></h5>
             </span>
             <ul>
-              <li>Led a solo project converting a Microsoft Access app into a web app, deployed as serverless functions
-                on Azure with JWT auth via Azure AAD</li>
-              <li>Created secure API endpoints with Python/Flask, integrated with T-SQL stored procedures from the DB
-              </li>
+              <li>Led a solo project converting a Microsoft Access application into a web application deployed through
+                Azure serverless functions</li>
+              <li>Implemented JWT-based authentication using Azure Active Directory</li>
+              <li>Built secure Python/Flask API endpoints integrating with existing T-SQL stored procedures</li>
             </ul>
           </div>
         </div>
@@ -218,112 +221,81 @@
               <h5><em>(Aug 2022 - April 2023)</em></h5>
             </span>
             <ul>
-              <li>Collaborated in small team to successfully design and build a web app that handles $20m/month in
-                invoicing</li>
-              <li>Developed a sophisticated custom table component with expandable rows in React/Typescript, effectively
-                showcasing extensive datasets with clarity</li>
+              <li>Collaborated in a small development team to design and build a web application supporting
+                approximately <strong>$20 million in monthly invoicing</strong></li>
+              <li>Developed a custom React/TypeScript table component with expandable rows to present large datasets
+                clearly and efficiently</li>
             </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <h2>Previous Experience in the Construction Industry</h2>
-    <h5 class="reduce">4 years as a Quantity Surveyor prior to changing career into Technology</h5>
+    <h2>Earlier Career</h2>
+    <h5 class="reduce">Quantity Surveying &amp; Construction - approximately 4 years prior to changing career into
+      technology</h5>
     <section>
       <div class="experiance__company">
-        <img src="./imgs/jennian_logo.svg" width="32px" height="32px" alt="datacom_logo">
+        <img src="./imgs/jennian_logo.svg" width="32px" height="32px" alt="jennian_logo">
         <div>
           <h3>Jennian Homes</h3>
-          <h5>Full-time, Intermediate Quantity Surveyor - 6 months</h5>
+          <h5>Intermediate Quantity Surveyor</h5>
         </div>
       </div>
-      <div class="prev-experiance ">
-        <ul>
-          <li>Measured quantities and estimated cost of construction for mid-range residential homes</li>
-        </ul>
-      </div>
-    </section>
-
-    <section>
       <div class="experiance__company">
-        <img src="./imgs/rawlinsons_logo.svg" width="32px" height="32px" alt="datacom_logo">
+        <img src="./imgs/rawlinsons_logo.svg" width="32px" height="32px" alt="rawlinsons_logo">
         <div>
           <h3>Rawlinsons</h3>
-          <h5>Full-time, Intermediate Quantity Surveyor - 1 year</h5>
+          <h5>Intermediate Quantity Surveyor</h5>
         </div>
       </div>
-      <div class="prev-experiance ">
-        <ul>
-          <li>Cost planning and estimation from preliminary through to detailed design stage</li>
-        </ul>
-      </div>
-    </section>
-
-    <section>
       <div class="experiance__company">
-        <img src="./imgs/breen_logo.svg" width="32px" height="32px" alt="datacom_logo">
+        <img src="./imgs/breen_logo.svg" width="32px" height="32px" alt="breen_logo">
         <div>
           <h3>Breen Homes</h3>
-          <h5>Full-time, Junior Quantity Surveyor - 2 years 2 months</h5>
-          <ul>
-            <li>Measured quantities and estimated the cost of construction for mid-range to high-end residential homes
-            </li>
-            <li>Worked with internal sales team to produce detailed fixed price quotes for residential clients </li>
-          </ul>
+          <h5>Junior Quantity Surveyor</h5>
         </div>
       </div>
-    </section>
-
-    <section>
       <div class="experiance__company">
-        <img src="./imgs/fletcher_logo.svg" width="32px" height="32px" alt="datacom_logo">
+        <img src="./imgs/fletcher_logo.svg" width="32px" height="32px" alt="fletcher_logo">
         <div>
           <h3>Fletcher Construction</h3>
-          <h5>Full-time, Apprentice Carpenter - 2 years 5 months</h5>
-          <ul>
-            <li>Commercial construction in Christchurch post earthquakes</li>
-          </ul>
+          <h5>Apprentice Carpenter</h5>
         </div>
       </div>
+      <p>Experience included residential and commercial construction, cost planning, detailed estimating, fixed-price
+        quotations, contract administration and commercial construction delivery.</p>
     </section>
 
     <h2>Education</h2>
 
     <section>
       <div class="experiance__company">
-        <img src="./imgs/dev_academy_logo.svg" width="32px" height="32px" alt="datacom_logo">
+        <img src="./imgs/dev_academy_logo.svg" width="32px" height="32px" alt="dev_academy_logo">
         <div>
-          <h3>Enspiral Dev Academy (bootcamp)</h3>
-          <h5>Full-time, Certificate in Web Development - 17 weeks</h5>
-          <ul>
-            <li>Experienced and participated in a fabulous team dynamic</li>
-            <li>Peer programming through driver/navigator</li>
-            <li>Actively participated in structured feedback sessions, both giving and receiving constructive feedback
-            </li>
-            <li>Collaborating on group projects utilising the Agile framework</li>
-            <li>Developed presentation skills through lightning talks</li>
-            <li>Core foundational programming concepts</li>
-          </ul>
+          <h3>Enspiral Dev Academy</h3>
+          <h5>Certificate in Web Development</h5>
+          <p>17-week full-time software development bootcamp covering programming fundamentals, collaborative
+            development, Agile practices, peer programming, structured feedback and technical presentations.</p>
         </div>
       </div>
     </section>
 
     <section>
       <div class="experiance__company">
-        <img src="./imgs/otago_poly.svg" width="32px" height="32px" alt="datacom_logo">
+        <img src="./imgs/otago_poly.svg" width="32px" height="32px" alt="otago_poly_logo">
         <div>
           <h3>Otago Polytechnic</h3>
-          <h5>Full-time, Diploma in Quantity Surveying - 2 years</h5>
-          <ul>
-            <li>Residential and Commercial Construction methodologies</li>
-            <li>Construction Law</li>
-            <li>Method of Measurement</li>
-            <li>Contract Administration</li>
-          </ul>
+          <h5>Diploma in Quantity Surveying</h5>
+          <p>Residential and commercial construction methodologies, construction law, measurement and contract
+            administration.</p>
         </div>
       </div>
     </section>
+
+    <h2>Additional Information</h2>
+    <p>New Zealand citizen | Open to relocating to Christchurch</p>
+    <p>References available on request</p>
 
     <footer>2026</footer>
   </page>

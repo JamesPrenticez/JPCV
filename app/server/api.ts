@@ -49,6 +49,7 @@ db.exec(`
     approach         TEXT NOT NULL DEFAULT 'Advertised',
     date_applied     TEXT NOT NULL DEFAULT '',
     follow_up_date   TEXT NOT NULL DEFAULT '',
+    date_rejected    TEXT NOT NULL DEFAULT '',
     company_url      TEXT NOT NULL DEFAULT '',
     job_url          TEXT NOT NULL DEFAULT '',
     technologies     TEXT NOT NULL DEFAULT '[]',
@@ -80,6 +81,10 @@ if (!db.prepare("SELECT 1 FROM pragma_table_info('applications') WHERE name = 't
 if (!db.prepare("SELECT 1 FROM pragma_table_info('applications') WHERE name = 'approach'").get()) {
   db.exec("ALTER TABLE applications ADD COLUMN approach TEXT NOT NULL DEFAULT 'Advertised'");
 }
+// ponytail: one-off migration for DBs created before `date_rejected` existed; delete once every DB has run it.
+if (!db.prepare("SELECT 1 FROM pragma_table_info('applications') WHERE name = 'date_rejected'").get()) {
+  db.exec("ALTER TABLE applications ADD COLUMN date_rejected TEXT NOT NULL DEFAULT ''");
+}
 // ponytail: one-off migration from the single inline contact; delete once every DB has run it.
 if (db.prepare("SELECT 1 FROM pragma_table_info('applications') WHERE name = 'contact_name'").get()) {
   db.exec(`
@@ -97,7 +102,7 @@ if (db.prepare("SELECT 1 FROM pragma_table_info('applications') WHERE name = 'co
 
 const HTTP = /^https?:\/\//i;
 const URLS = ["company_url", "job_url"] as const;
-const DATES = ["date_applied", "follow_up_date"] as const;
+const DATES = ["date_applied", "follow_up_date", "date_rejected"] as const;
 const CONTACT_KEYS = ["name", "role", "email", "phone", "linkedin"] as const satisfies readonly (keyof Contact)[];
 const FIELDS = [
   "company", "priority", "role_level", "role_type", "location", "source", "status", "approach", ...DATES, ...URLS, "technologies",
@@ -152,7 +157,7 @@ const update = db.prepare(
   `UPDATE applications SET ${FIELDS.map((f) => `${f} = :${f}`).join(", ")} WHERE id = :id RETURNING *`,
 );
 const remove = db.prepare("DELETE FROM applications WHERE id = ?");
-const one = db.prepare("SELECT id, company FROM applications WHERE id = ?");
+const one = db.prepare("SELECT id, company, status FROM applications WHERE id = ?");
 
 // A sub-app (not a bare Router) so it also works when mounted inside Vite's dev server.
 export const api = express();
@@ -161,7 +166,14 @@ api.use(express.json());
 api.get("/applications", (req, res) => res.json(list.all().map(out)));
 api.post("/applications", (req, res) => res.status(201).json(out(insert.get(parse(req.body)))));
 api.put("/applications/:id", (req, res) => {
-  const row = out(update.get({ ...parse(req.body), id: Number(req.params.id) }));
+  const id = Number(req.params.id);
+  const next = parse(req.body);
+  // Moving to Rejected (not re-saving an already rejected one) drops the priority and stamps today unless a date was typed.
+  if (next.status === "Rejected" && one.get(id)?.status !== "Rejected") {
+    next.priority = "Low";
+    next.date_rejected ||= new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD in local time
+  }
+  const row = out(update.get({ ...next, id }));
   row ? res.json(row) : res.status(404).json({ error: "not found" });
 });
 api.delete("/applications/:id", (req, res) => {

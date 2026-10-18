@@ -219,7 +219,7 @@ export default function App() {
         <Table>
           <thead>
             <tr>
-              {sortTh("priority", "Priority")}<th>Company</th><th>Technologies</th><th>Location</th><th>Source</th>{sortTh("status", "Status")}<th>Approach</th><th>Applied</th><th>Follow up</th><th>Contact</th><th>CV</th><th>Cover letter</th><th />
+              {sortTh("priority", "Priority")}<th>Company</th><th>Technologies</th><th>Location</th><th>Source</th>{sortTh("status", "Status")}<th>Approach</th><th>Applied</th><th>Follow up</th><th>Rejected</th><th>Contact</th><th>CV</th><th>Cover letter</th><th />
             </tr>
           </thead>
           <tbody>
@@ -254,6 +254,7 @@ export default function App() {
                 <td><span role="img" title={r.approach} aria-label={r.approach}>{APPROACH_ICONS[r.approach]}</span></td>
                 <td>{fmt(r.date_applied)}</td>
                 <td><Late $late={!!r.follow_up_date && r.follow_up_date <= today && !CLOSED.includes(r.status)}>{fmt(r.follow_up_date)}</Late></td>
+                <td>{fmt(r.date_rejected)}</td>
                 <td>
                   {r.contacts.map((c, i) => (
                     <Person key={i}>
@@ -279,7 +280,7 @@ export default function App() {
                 <td><Button onClick={() => setEditing(r)}>Edit</Button></td>
               </tr>
             ))}
-            {!shown.length && <tr><td colSpan={13}><Muted>Nothing here yet.</Muted></td></tr>}
+            {!shown.length && <tr><td colSpan={14}><Muted>Nothing here yet.</Muted></td></tr>}
           </tbody>
         </Table>
       </Card>
