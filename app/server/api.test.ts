@@ -118,33 +118,17 @@ test("rejects bad input", async () => {
   }
 });
 
-test("cv: save per application, keep editing, restore the saved one", async () => {
-  const live = join(cvDir, "index.html");
-  const stakeCv = "<head></head>stake cv";
-  const saved = () => readdirSync(join(cvDir, "versions")).filter((f) => f.startsWith("1-"));
-  const stake = (await (await call("", "POST", { ...valid, company: "Stake Ltd" })).json()) as Application;
-  assert.equal(stake.has_cv, false);
-  assert.equal((await call(`/${stake.id}/cv/restore`, "POST")).status, 404);
-  assert.equal((await call("/9999/cv", "POST")).status, 404);
-
-  writeFileSync(live, stakeCv);
-  assert.equal((await call(`/${stake.id}/cv`, "POST")).status, 204);
-  assert.equal(await (await call(`/${stake.id}/cv`)).text(), `<head><base href="http://localhost:3000/"></head>stake cv`); // viewer page
-  assert.equal((await call("/9999/cv")).status, 404);
-  writeFileSync(live, "dominator cv"); // keep editing the working copy
-  assert.equal(((await (await call("")).json()) as Application[])[0].has_cv, true);
-
-  assert.equal((await call(`/${stake.id}/cv/restore`, "POST")).status, 204);
-  assert.equal(readFileSync(live, "utf8"), stakeCv);
-  assert.equal(readFileSync(join(cvDir, "versions", "_previous.html"), "utf8"), "dominator cv");
-
-  await call(`/${stake.id}`, "PUT", { ...valid, company: "Stake Pty" }); // rename, then re-save: still one file
-  await call(`/${stake.id}/cv`, "POST");
-  assert.deepEqual(saved(), [`${stake.id}-stake-pty.html`]);
-  await call(`/${stake.id}`, "DELETE");
+test("cv: working file with the relocation line swapped for the chosen location", async () => {
+  const cv = (place: string) => fetch(`http://localhost:${(server.address() as AddressInfo).port}/api/cv?location=${place}`);
+  writeFileSync(join(cvDir, "index.html"), "<head></head><small>NZ citizen open to relocating to Auckland</small><p>Open to Relocating to Auckland</p>");
+  assert.equal(
+    await (await cv("Australia")).text(),
+    `<head><base href="http://localhost:3000/"></head><small>NZ citizen open to relocating to Australia</small><p>Open to Relocating to Australia</p>`,
+  );
+  assert.equal((await cv("Mars")).status, 400);
 });
 
-test("cover letter: same flow, as .md in its own folder, independent of the CV", async () => {
+test("cover letter: same flow, as .md in its own folder", async () => {
   const live = join(cvDir, "cover-letter.md");
   const dir = join(cvDir, "cover-letters");
   const stake = (await (await call("", "POST", { ...valid, company: "Stake Ltd" })).json()) as Application;

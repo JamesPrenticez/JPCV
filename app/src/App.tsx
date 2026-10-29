@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import styled from "styled-components";
-import { APPROACHES, PRIORITIES, STATUSES, type Application, type Approach, type Doc, type Draft, type Location, type Priority, type Status } from "../shared.ts";
+import { APPROACHES, CV_LOCATIONS, PRIORITIES, STATUSES, type Application, type Approach, type CvLocation, type Doc, type Draft, type Location, type Priority, type Status } from "../shared.ts";
 import * as api from "./api.ts";
 import Form from "./Form.tsx";
 import { Button, GlobalStyle } from "./styles.ts";
@@ -100,29 +100,33 @@ function DotPicker<T extends string>({ value, options, colors, label, onPick }:
   );
 }
 
-// What each saved document is called, which file you edit, and which flag says a copy exists.
+// The cover letter's name, the file you edit, and which flag says a copy is saved.
 const DOCS: Record<Doc, { label: string; live: string; has: (r: Application) => boolean }> = {
-  cv: { label: "CV", live: "cv/index.html", has: (r) => r.has_cv },
   "cover-letter": { label: "Cover letter", live: "cv/cover-letter.md", has: (r) => r.has_cover_letter },
 };
+const AUSTRALIA: readonly Location[] = ["Adelaide", "Melbourne", "Perth", "Sydney"];
+// The CV variant that matches an application's location field; anywhere else gets the first (home) one.
+const cvFor = (l: Location | ""): CvLocation => (AUSTRALIA.includes(l as Location) ? "Australia" : CV_LOCATIONS.find((c) => c === l) ?? CV_LOCATIONS[0]);
 
-// Shows the CV or cover letter saved for one application. Mounted = open (same pattern as Form). Sandboxed: it's a document, it never needs to run scripts.
-function DocViewer({ row, doc, onClose }: { row: Application; doc: Doc; onClose: () => void }) {
+// Shows the CV (for a chosen location) or the cover letter saved for one application. Mounted = open (same pattern as Form). Sandboxed: it's a document, it never needs to run scripts.
+type Viewing = { title: string; src: string; note?: string };
+function DocViewer({ title, src, note, onClose }: Viewing & { onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => { if (!ref.current?.open) ref.current?.showModal(); }, []);
   return (
     <Viewer ref={ref} onClose={onClose}>
       <header>
         <div>
-          <strong>{row.company}: {DOCS[doc].label} as saved</strong>
-          {doc === "cv" && <Muted>Styling and images come from the CV dev server (pnpm dev in cv/).</Muted>}
+          <strong>{title}</strong>
+          {note && <Muted>{note}</Muted>}
         </div>
         <Button onClick={() => ref.current?.close()}>Close</Button>
       </header>
-      <iframe sandbox="" src={`/api/applications/${row.id}/${doc}`} title={`${DOCS[doc].label} saved for ${row.company}`} />
+      <iframe sandbox="" src={src} title={title} />
     </Viewer>
   );
 }
+
 
 export default function App() {
   const [rows, setRows] = useState<Application[]>([]);
@@ -132,7 +136,7 @@ export default function App() {
   const [sort, setSort] = useState<{ key: "priority" | "status"; desc: boolean } | null>(null);
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Draft | null>(null); // null = closed, object = form open (no id = new)
-  const [viewing, setViewing] = useState<{ row: Application; doc: Doc } | null>(null);
+  const [viewing, setViewing] = useState<Viewing | null>(null);
   const [error, setError] = useState("");
 
   const reload = async () => setRows(await api.list());
@@ -151,7 +155,7 @@ export default function App() {
   };
   const patch = (row: Application, change: Partial<Application>) =>
     api.update(row.id, { ...row, ...change }).then(reload).then(() => setError(""), (e: Error) => setError(e.message));
-  // The CV and cover letter are the files cv/index.html and cv/cover-letter.md: "save" pins current contents to this application, "restore" copies them back.
+  // The cover letter is the file cv/cover-letter.md: "save" pins current contents to this application, "restore" copies them back.
   const saveDoc = (r: Application, doc: Doc) =>
     (!DOCS[doc].has(r) || confirm(`Overwrite ${r.company}'s saved ${DOCS[doc].label} with the current ${DOCS[doc].live}?`)) &&
     api.saveDoc(r.id, doc).then(reload).then(() => setError(""), (e: Error) => setError(e.message));
@@ -185,7 +189,7 @@ export default function App() {
       <GlobalStyle />
       <Top>
         <h1>Job Tracker</h1>
-        <Button $primary onClick={() => setEditing({ priority: "Medium", source: "LinkedIn", status: "Saved", approach: "Advertised", date_applied: today })}>
+        <Button $primary onClick={() => setEditing({ priority: "High", source: "LinkedIn", status: "Saved", approach: "Advertised", date_applied: today })}>
           + Add
         </Button>
       </Top>
@@ -268,15 +272,16 @@ export default function App() {
                     </Person>
                   ))}
                 </td>
-                {(Object.keys(DOCS) as Doc[]).map((doc) => (
-                  <td key={doc}>
-                    <Links>
-                      {DOCS[doc].has(r) && <Button onClick={() => setViewing({ row: r, doc })}>View</Button>}
-                      {DOCS[doc].has(r) && <Button onClick={() => restoreDoc(r, doc)}>Restore</Button>}
-                      <Button onClick={() => saveDoc(r, doc)}>{DOCS[doc].has(r) ? "Re-save" : "Save"}</Button>
-                    </Links>
-                  </td>
-                ))}
+                <td><Button onClick={() => setViewing({ title: `${r.company}: CV (${cvFor(r.location)})`, src: `/api/cv?location=${cvFor(r.location)}`, note: "Styling and images come from the CV dev server (pnpm dev in cv/)." })}>View</Button></td>
+                <td>
+                  <Links>
+                    {DOCS["cover-letter"].has(r) && (
+                      <Button onClick={() => setViewing({ title: `${r.company}: Cover letter as saved`, src: `/api/applications/${r.id}/cover-letter` })}>View</Button>
+                    )}
+                    {DOCS["cover-letter"].has(r) && <Button onClick={() => restoreDoc(r, "cover-letter")}>Restore</Button>}
+                    <Button onClick={() => saveDoc(r, "cover-letter")}>{DOCS["cover-letter"].has(r) ? "Re-save" : "Save"}</Button>
+                  </Links>
+                </td>
                 <td><Button onClick={() => setEditing(r)}>Edit</Button></td>
               </tr>
             ))}
@@ -285,7 +290,7 @@ export default function App() {
         </Table>
       </Card>
 
-      {viewing && <DocViewer {...viewing} onClose={() => setViewing(null)} />}
+      {viewing && <DocViewer key={viewing.src} {...viewing}onClose={() => setViewing(null)} />}
       {editing && (
         <Form key={editingId ?? "new"} row={editing} suggestions={suggestions} onSave={save}
           onDelete={editingId ? () => del(editingId) : undefined} onClose={() => setEditing(null)} />

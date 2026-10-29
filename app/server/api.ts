@@ -2,16 +2,16 @@ import express, { type ErrorRequestHandler } from "express";
 import { DatabaseSync } from "node:sqlite";
 import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { APPROACHES, LEVELS, LOCATIONS, PRIORITIES, ROLE_TYPES, SOURCES, STATUSES, type Application, type Contact, type Doc } from "../shared.ts";
+import { APPROACHES, CV_LOCATIONS, LEVELS, LOCATIONS, PRIORITIES, ROLE_TYPES, SOURCES, STATUSES, type Application, type Contact, type Doc } from "../shared.ts";
 
-type Fields = Omit<Application, "id" | "technologies" | "contacts" | "has_cv" | "has_cover_letter"> & { technologies: string; contacts: string }; // JSON arrays in the DB
+type Fields = Omit<Application, "id" | "technologies" | "contacts" | "has_cover_letter"> & { technologies: string; contacts: string }; // JSON arrays in the DB
 
 const file = process.env.DB_PATH ?? resolve(import.meta.dirname, "../data/jobs.db");
 if (file !== ":memory:") mkdirSync(dirname(file), { recursive: true });
 
-// The CV and the cover letter each have a working file you edit; what was sent to one application is a copy of it:
-//   cv/index.html -> cv/versions/<id>-<company>.html      cv/cover-letter.md -> cv/cover-letters/<id>-<company>.md
-// Plain files in the repo, so git backs them up and diffs them.
+// The cover letter has a working file you edit; what was sent to one application is a copy of it:
+//   cv/cover-letter.md -> cv/cover-letters/<id>-<company>.md
+// Plain files in the repo, so git backs them up and diffs them. The CV isn't copied: only its relocation line varies, see GET /cv.
 // ponytail: deleting an application leaves its files behind, and a reused id would inherit them; delete them in DELETE if that bites.
 const cvDir = process.env.CV_DIR ?? resolve(import.meta.dirname, "../../cv");
 // The viewer needs the CV's stylesheet and images, which only the CV's own dev server serves (pnpm dev in cv/).
@@ -20,10 +20,6 @@ const cvUrl = process.env.CV_URL ?? "http://localhost:3000";
 // ponytail: add a markdown renderer if the raw text bothers you.
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const docs: Record<Doc, { live: string; dir: string; ext: string; type: string; view: (text: string) => string }> = {
-  cv: {
-    live: join(cvDir, "index.html"), dir: join(cvDir, "versions"), ext: "html", type: "html",
-    view: (html) => html.replace(/<head[^>]*>/i, (head) => `${head}<base href="${cvUrl}/">`), // <base> sends ./imgs and /styles to the CV dev server
-  },
   "cover-letter": {
     live: join(cvDir, "cover-letter.md"), dir: join(cvDir, "cover-letters"), ext: "md", type: "html",
     view: (md) => `<!doctype html><meta name="color-scheme" content="light"><pre style="margin:24px;white-space:pre-wrap;font:15px/1.5 system-ui,sans-serif;color:#000">${esc(md)}</pre>`,
@@ -146,7 +142,7 @@ const techs = (text: string) =>
   text.split(/[,\n]/).map((s) => s.trim()).filter((s, i, all) => s && all.findIndex((t) => t.toLowerCase() === s.toLowerCase()) === i);
 
 const out = (row?: Record<string, unknown>) =>
-  row && { ...row, technologies: JSON.parse(String(row.technologies)), contacts: JSON.parse(String(row.contacts)), has_cv: !!saved("cv", Number(row.id)), has_cover_letter: !!saved("cover-letter", Number(row.id)) };
+  row && { ...row, technologies: JSON.parse(String(row.technologies)), contacts: JSON.parse(String(row.contacts)), has_cover_letter: !!saved("cover-letter", Number(row.id)) };
 
 const byPriority = `CASE priority ${PRIORITIES.map((p, i) => `WHEN '${p}' THEN ${i}`).join(" ")} END`;
 const list = db.prepare(`SELECT * FROM applications ORDER BY ${byPriority}, date_applied DESC, id DESC`);
@@ -178,6 +174,16 @@ api.put("/applications/:id", (req, res) => {
 });
 api.delete("/applications/:id", (req, res) => {
   remove.run(Number(req.params.id)).changes ? res.sendStatus(204) : res.status(404).json({ error: "not found" });
+});
+
+// The working CV with its relocation line set to the chosen place ("relocating to X" appears twice), for the viewer iframe.
+api.get("/cv", (req, res) => {
+  const place = String(req.query.location);
+  if (!oneOf(CV_LOCATIONS, place)) throw bad(`location must be one of: ${CV_LOCATIONS.join(", ")}`);
+  const html = readFileSync(join(cvDir, "index.html"), "utf8")
+    .replace(/(relocating to )[A-Za-z]+/gi, `$1${place}`)
+    .replace(/<head[^>]*>/i, (head) => `${head}<base href="${cvUrl}/">`); // <base> sends ./imgs and /styles to the CV dev server
+  res.type("html").send(html);
 });
 
 for (const [doc, { live, dir, ext, type, view }] of Object.entries(docs) as [Doc, (typeof docs)[Doc]][]) {

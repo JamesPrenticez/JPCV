@@ -1,16 +1,8 @@
-Dear Xe Hiring Team,
-
-I’m excited to apply for the Mid-Level Full-Stack Engineer role at Xe. With over 4+ years of commercial software development experience across startups and enterprise environments, I bring a strong foundation in frontend engineering, full-stack development, and building production-ready applications. The opportunity to help modernise a platform that moves money internationally is particularly appealing to me, as it combines meaningful real-world problems with the opportunity to take ownership and deliver impactful software.
-
-In my current role at Animo Gaming, I build customer-facing game interfaces and interactive features, including reusable UI components, buttons, modals, overlays, and integrations with backend services. Working in a fast-moving startup has taught me to balance delivery speed with maintainability, collaborate closely with other disciplines, and take ownership of features from implementation through to release.
-
-Previously, at Datacom, I gained experience working in an enterprise environment, contributing to client-facing applications and developing an appreciation for robust engineering practices, collaboration, and building software that can be maintained and extended over time. Across both environments, my core strengths have been React, TypeScript, component architecture, API integration, and creating polished, reliable user experiences.
-
-What particularly interests me about Xe is the opportunity to contribute beyond the frontend. I enjoy understanding how the pieces of an application fit together, from the user experience and API contracts through to the services supporting them. I’m keen to continue expanding my backend and cloud engineering capabilities while contributing my existing strengths to a team modernising a platform with real scale and complexity.
-
-I’m also enthusiastic about using AI-assisted development tools to improve how I prototype, refactor, test, and deliver software. I value practical engineering decisions, clear communication, and taking responsibility for the quality of the work I ship.
-
-I’d welcome the opportunity to bring my experience, curiosity, and startup mindset to Xe and contribute to building a modern, dependable cross-border payments platform.
-
-Kind regards,  
+Dear Deloitte Hiring Team,
+I’m excited to apply for the R&D Tax Incentives Consultant role in Christchurch. With over four years of software development experience at Datacom and Animo Gaming, alongside an earlier career in quantity surveying, I bring a combination of technical expertise and commercial awareness.
+At Datacom, I worked across customer-facing applications and internal financial systems, including a billing platform supporting approximately $20 million in monthly invoicing. My experience has taught me how to investigate technical challenges, understand business requirements and collaborate with different stakeholders to deliver practical solutions.
+I’m also an AI-assisted developer who has adapted alongside the evolution of these tools while maintaining a strong understanding of software engineering fundamentals. I’m keen to apply this technical knowledge beyond writing code, helping businesses articulate their innovation, understand technical uncertainty and communicate complex ideas clearly.
+Deloitte appeals to me because this role combines technology, commercial problem-solving and client engagement. While I’ll be learning the R&D tax incentive framework, I can bring hands-on development experience, analytical thinking and a genuine curiosity about how businesses innovate.
+I’d welcome the opportunity to bring my experience to Deloitte and develop my career in technology consulting.
+Kind regards,
 James Prentice

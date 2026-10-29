@@ -1,11 +1,12 @@
 // Imported by both the Express API (validation) and the React UI (dropdowns, types).
 export const STATUSES = ["Saved", "Contacted", "Applied", "Interview", "Offer", "Rejected"] as const;
-export const SOURCES = ["LinkedIn", "Seek", "Other"] as const;
+export const SOURCES = ["LinkedIn", "Seek", "Recruiter", "Other"] as const;
 
 export const LEVELS = ["Junior", "Intermediate", "Senior"] as const;
 export const ROLE_TYPES = ["Frontend", "Backend", "Full stack"] as const;
 export const APPROACHES = ["Advertised", "Cold approach"] as const; // cold = no advert, you reached out first
 export const PRIORITIES = ["High", "Medium", "Low"] as const; // list order = sort order
+export const CV_LOCATIONS = ["Christchurch", "Auckland", "Australia"] as const; // the one line of the CV that changes per application
 export const LOCATIONS = ["Auckland", "Christchurch", "Dunedin", "Hamilton", "Queenstown", "Wellington", "Adelaide", "Melbourne", "Perth", "Sydney", "United Kingdom", "United States", "Poland", "Sweden", "Gibraltar", "Spain", "Romania", "Moldova", "Europe", "Remote"] as const;
 
 export type Priority = (typeof PRIORITIES)[number];
@@ -15,6 +16,7 @@ export type Approach = (typeof APPROACHES)[number];
 export type Level = (typeof LEVELS)[number];
 export type RoleType = (typeof ROLE_TYPES)[number];
 export type Location = (typeof LOCATIONS)[number];
+export type CvLocation = (typeof CV_LOCATIONS)[number];
 
 export type Contact = { name: string; role: string; email: string; phone: string; linkedin: string };
 
@@ -36,12 +38,11 @@ export type Application = {
   technologies: string[]; // buzzwords from the advert, e.g. ["TypeScript", "Pixi.js", "GDD"]
   contacts: Contact[]; // blank ones are dropped by the server
   notes: string;
-  has_cv: boolean; // a saved copy of the CV exists in cv/versions/; derived, not a column
-  has_cover_letter: boolean; // same, in cv/cover-letters/
+  has_cover_letter: boolean; // a saved copy of the cover letter exists in cv/cover-letters/; derived, not a column
 };
 
-/** The two documents saved per application; also the API path segment. */
-export type Doc = "cv" | "cover-letter";
+/** The document saved per application; also the API path segment. The CV isn't saved: it only differs by CV_LOCATIONS. */
+export type Doc = "cover-letter";
 
 /** What the form holds and the client sends; the server validates it and fills in the rest. */
 export type Draft = Partial<Application>;
